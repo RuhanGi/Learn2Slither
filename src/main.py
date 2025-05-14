@@ -12,6 +12,20 @@ GRAY = "\033[97m"
 BLACK = "\033[98m"
 RESET = "\033[0m"
 
+def displayVisual():
+    print()
+    # TODO Slider adjusting speed
+    # TODO Button to save state anytime
+    # TODO lobby
+    # TODO a configuration panel,
+    # TODO results and statistics
+    # TODO ...
+
+
+def compute():
+    print()
+    # TODO display state in terminal
+    # TODO Exploration vs Exploitation: choose random instead of best
 
 def main():
     parser = argparse.ArgumentParser()
@@ -25,10 +39,10 @@ def main():
         help='Max Training Sessions')
     parser.add_argument('-visual', help='Display Visuals')
     parser.add_argument('-nolearning', help='Stop Learning')
+    parser.add_argument('-stepbystep', help='Stop Learning')
     args = parser.parse_args()
 
     print(GREEN + str(args.size) + RESET)
-
 
 if __name__ == "__main__":
     try:
