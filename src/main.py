@@ -15,7 +15,7 @@ RESET = "\033[0m"
 
 def main():
     parser = argparse.ArgumentParser(description='Training script for your model.')
-    parser.add_argument('mod', type=str, default="[MODEL]", help='Path to model file')
+    parser.add_argument('mod')
     parser.add_argument('--layers', nargs='+', type=int, default=[24, 15],
                         help='Number of nodes in each layer, e.g., --layers 24 15')
     args = parser.parse_args()
