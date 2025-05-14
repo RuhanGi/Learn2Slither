@@ -14,19 +14,20 @@ RESET = "\033[0m"
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Training script for your model.')
-    parser.add_argument('mod')
-    parser.add_argument('--layers', nargs='+', type=int, default=[24, 15],
-                        help='Number of nodes in each layer, e.g., --layers 24 15')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-load', nargs=1, type=str,
+        help='Load Model')
+    parser.add_argument('-save', nargs=1, type=str,
+        help='Save Model As')
+    parser.add_argument('-size', nargs=2, type=int, default=[10, 10],
+        help='Set Boardsize')
+    parser.add_argument('-max', nargs=1, type=int, default=100,
+        help='Max Training Sessions')
+    parser.add_argument('-visual', help='Display Visuals')
+    parser.add_argument('-nolearning', help='Stop Learning')
     args = parser.parse_args()
-    # * load with model
-    # * save model as
-    # * max sessions
-    # * have visuals
-    # * no learning
-    # * boardsize
 
-    print(GREEN + args.mod + RESET)
+    print(GREEN + str(args.size) + RESET)
 
 
 if __name__ == "__main__":
