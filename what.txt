@@ -1,0 +1,41 @@
+- flake8
+- Each choice provides positive or negative feedback
+- Maximize positive feedback or rewards over time
+
+- Board: 10x10, 2 green, 1 red
+- Apple: green +1, red -1
+- Snake: starts with 3 randomly, if 0 game end
+- Wall: ends
+
+- Slider adjusting speed, step by step mode
+
+- command line parameter to define how many training sessions should be executed
+
+
+Snake can see: in straight lines only NEWS
+
+4 actions: UP, LEFT, DOWN, RIGHT only based on snake vision(State)
+
+Board displayed graphically, State displayed in terminal
+
+Goal: atleast 10 cells snake length and stay alive
+BONUS: higher length at end (15, 20, 25, 30, 35)
+
+Model uses Q function using Q-values in Q-table or a neural network
+
+The Q-learning adjusts the Q function and Q-values based on the reward
+
+Exploration vs Exploitation: choose random instead of best
+
+Export and import models: save state anytime, load state anytime
+
+Exploitation without learning: no learning just to see success rate
+
+Can remove graphics when training to speed
+
+BONUS: Creating a visually stunning display:
+- lobby
+- a configuration panel,
+- results and statistics
+- ...
+
