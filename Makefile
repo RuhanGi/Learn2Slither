@@ -1,5 +1,4 @@
-SRCDIR = src
-PKGS = pandas numpy
+PKGS = numpy
 
 GREY   = \033[30m
 GREEN  = \033[32m
@@ -20,7 +19,7 @@ check:
 	done
 
 a:
-	python3 $(SRCDIR)/main.py
+	python3 src/main.py -size 5 5
 
 clean:
 	find . \( -name "__pycache__" -o -name ".DS_Store" \) -print0 | xargs -0 rm -rf
@@ -32,7 +31,7 @@ fclean: clean
 
 gpush: fclean
 	git add .
-	git commit -m "setup"
+	git commit -m "Board setup"
 	git push
 
 re: fclean all
