@@ -1,0 +1,33 @@
+import numpy as np
+
+RED     = "\033[31m"
+GREEN   = "\033[32m"
+YELLOW  = "\033[33m"
+BLUE    = "\033[34m"
+PURPLE  = "\033[35m"
+CYAN    = "\033[36m"
+GRAY    = "\033[90m"
+BLACK   = "\033[30m"
+WHITE   = "\033[37m"
+RESET   = "\033[0m"
+
+class Agent:
+    """
+        Agent
+
+        - gets state
+        - outputs action
+        - receives reward
+        - updates schema
+    """
+
+    def __init__(self, load):
+        self.net = load
+
+
+    def think(self, state):
+        action = argmax()
+        return action
+    
+    def reflect(self, reward):
+        self.update

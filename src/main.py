@@ -1,4 +1,4 @@
-from arch import Board
+from arch import Environment, Agent
 import argparse
 import sys
 
@@ -36,13 +36,13 @@ def parse_args():
     return parser.parse_args()
 
 def printArgs(args):
-    print(GREEN + str(args.load) + RESET)
+    print(GREEN + str(args.load) + RESET) 
     print(GREEN + str(args.save) + RESET)
     print(GREEN + str(args.size) + RESET)
-    print(GREEN + str(args.max) + RESET)
-    print(GREEN + str(args.visual) + RESET)
-    print(GREEN + str(args.nolearn) + RESET)
-    print(GREEN + str(args.stepbystep) + RESET)
+    print(GREEN + str(args.max) + RESET) #handle
+    print(GREEN + str(args.visual) + RESET) #handle
+    print(GREEN + str(args.nolearn) + RESET) #handle
+    print(GREEN + str(args.stepbystep) + RESET) #handle
 
 def displayVisual():
     print()
@@ -56,13 +56,20 @@ def displayVisual():
 
 def compute():
     print()
-    # TODO display state in terminal
+    # TODO display snake vision in terminal
+    displayVisual()
     # TODO Exploration vs Exploitation: choose random instead of best
+
 
 def main():
     args = parse_args()
 
-    b = Board(args.size)
+    agent = Agent(args.load)
+    b = Environment(args.size)
+
+    if args.save is not None:
+        # TODO save model
+        print(GREEN + "Model Saved!", RESET)
 
 if __name__ == "__main__":
     main()

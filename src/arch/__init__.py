@@ -1,1 +1,2 @@
-from .Board import Board
+from .Environment import Environment
+from .Agent import Agent

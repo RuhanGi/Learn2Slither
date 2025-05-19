@@ -21,6 +21,9 @@ check:
 a:
 	python3 src/main.py -size 5 5
 
+v:
+	python3 src/game.py
+
 clean:
 	find . \( -name "__pycache__" -o -name ".DS_Store" \) -print0 | xargs -0 rm -rf
 	rm -rf data/train.csv data/val.csv
@@ -31,7 +34,7 @@ fclean: clean
 
 gpush: fclean
 	git add .
-	git commit -m "Board setup"
+	git commit -m "Playable"
 	git push
 
 re: fclean all
