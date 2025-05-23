@@ -22,6 +22,7 @@ a:
 	python3 src/main.py -size 5 5
 
 t:
+	# python3 src/main.py -save 'models/first.pth' -max 20
 	python3 src/main.py -load 'models/first.pth' -save 'models/first.pth' -max 20
 
 v:

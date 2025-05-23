@@ -3,6 +3,17 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
+RED     = "\033[31m"
+GREEN   = "\033[32m"
+YELLOW  = "\033[33m"
+BLUE    = "\033[34m"
+PURPLE  = "\033[35m"
+CYAN    = "\033[36m"
+GRAY    = "\033[90m"
+BLACK   = "\033[30m"
+WHITE   = "\033[37m"
+RESET   = "\033[0m"
+
 class Agent(nn.Module):
     def __init__(self, STATE_SIZE):
         super().__init__()
@@ -58,5 +69,11 @@ class Agent(nn.Module):
         loss.backward()
         self.optimizer.step()
 
+    def load(self, path):
+        if path is not None:
+            self.load_state_dict(torch.load(path))
+
     def save(self, path):
-        torch.save(self.state_dict(), path)
+        if path is not None:
+            torch.save(self.state_dict(), path)
+            print(GREEN + "Model Saved!", RESET)

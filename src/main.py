@@ -69,17 +69,12 @@ def main():
     args = parse_args()
 
     agent = Agent(12) # 12 = len(state)
-    if (args.load):
-        agent.load_state_dict(torch.load(args.load))
-        agent.eval()
+    agent.load(args.load)
 
     b = Environment(args.size)
-
     b.start(agent, args.max)
 
-    if args.save is not None:
-        agent.save(args.save)
-        print(GREEN + "Model Saved!", RESET)
+    agent.save(args.save)
 
 
 if __name__ == "__main__":
