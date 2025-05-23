@@ -13,6 +13,7 @@ WHITE   = "\033[37m"
 RESET   = "\033[0m"
 
 import os
+import time
 
 class Environment:
     """
@@ -22,18 +23,19 @@ class Environment:
     def __init__(self, size):
         self.rows = size[0]+2
         self.cols = size[1]+2
-        self.createBoard()
-        self.printBoard()
-        # self.printVision()
-        self.move(input())
 
-    def sendState(self):
+    def getVision(self):
         r, c = self.snake[-1]
         vision = []
         vision.append(self.board[r-1::-1, c])
         vision.append(self.board[r, c+1:])
         vision.append(self.board[r+1:, c])
         vision.append(self.board[r, c-1::-1])
+        return vision
+
+    def getState(self):
+        vision = self.getVision()
+        # self.printVision(vision)
         return Interpreter.getState(vision)
 
     def get_random_empty_cell(self):
@@ -59,8 +61,9 @@ class Environment:
         for i in range(2):
             self.board[self.snake[-1]] = 'S'
             self.snake.append(self.get_empty_cell(self.snake[-1]))
-
         self.board[self.snake[-1]] = 'H'
+        self.alive = True
+
         self.board[self.get_random_empty_cell()] = 'G'
         self.board[self.get_random_empty_cell()] = 'G'
         self.board[self.get_random_empty_cell()] = 'R'
@@ -72,13 +75,11 @@ class Environment:
         self.board[self.snake[-1]] = 'H'
 
     def move(self, direction):
-        # moves = [[-1, 0], [0, 1], [1, 0], [0, -1]]
-        while direction[0] not in "wasd":
-            direction = input()
-        moves = {'w': [-1, 0], 'd': [0, 1], 's': [1, 0], 'a': [0, -1]}
-        pos = tuple(np.array(self.snake[-1]) + moves[direction[0]])
+        moves = [[-1, 0], [0, 1], [1, 0], [0, -1]]
+        pos = tuple(np.array(self.snake[-1]) + moves[direction])
 
-        if self.board[pos] != 'G':
+        orig = self.board[pos]
+        if orig != 'G':
             self.board[self.snake.pop(0)] = '0'
         i = self.board[pos]
         self.snake.append(pos)
@@ -89,16 +90,32 @@ class Environment:
             del self.snake[0]
             self.board[self.get_random_empty_cell()] = 'R'
 
-        if i == 'S' or i == 'W' or len(self.snake) == 0:
+        if i in ['S', 'W'] or len(self.snake) == 0:
             print(RED + "Snake DIED!" + RESET)
-            return
+            self.alive = False
 
         self.printBoard()
-        self.move(input())
+        rewards = {'G': 10, 'R': -10, '0': -1, 'S': -100, 'W': -100}
+        return rewards[orig]
+
+    def start(self, agent, max):
+        print("SIM STARTED!")
+        for iteration in range(max):
+            self.createBoard()
+            self.printBoard()
+            state = self.getState()
+            while self.alive:
+                action = agent.act(state)
+                reward = self.move(action)
+                next_state = self.getState()
+                agent.train_step(state, action, reward, next_state, not self.alive)
+                state = next_state
+                time.sleep(0.2)
 
     def printBoard(self):
         os.system("clear")
-        self.updateSnake()
+        if (len(self.snake) > 0):
+            self.updateSnake()
         col = {'W': GRAY, 'S': PURPLE, 'H': YELLOW, 'G': GREEN, 'R': RED}
         for row in self.board:
             for cell in row:
@@ -108,6 +125,19 @@ class Environment:
                     print(' ', end='')
             print(RESET)
 
+    def printVision2(self, vision):
+        padd = len(vision[-1])
+        for c in reversed(vision[0]):
+            print(padd * ' ' + c)
+        for c in reversed(vision[-1]):
+            print(c, end='')
+        print('S', end='')
+        for c in vision[1]:
+            print(c, end='')
+        print()
+        for c in vision[2]:
+            print(padd * ' ' + c)
+
     def printVision(self):
         r, c = self.snake[-1]
         col = {'W': GRAY, '0': BLACK, 'S': CYAN, 'H': BLUE, 'G': GREEN, 'R': RED}
@@ -115,4 +145,3 @@ class Environment:
             for j in range(len(self.board[i])):
                 print(self.board[i][j]if i==r or j==c else ' ', end='')
             print()
-

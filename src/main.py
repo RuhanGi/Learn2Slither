@@ -1,5 +1,6 @@
 from arch import Environment, Agent
 import argparse
+import torch
 import sys
 
 
@@ -12,6 +13,7 @@ CYAN = "\033[96m"
 GRAY = "\033[97m"
 BLACK = "\033[98m"
 RESET = "\033[0m"
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Learn2Slither.")
@@ -35,14 +37,16 @@ def parse_args():
 
     return parser.parse_args()
 
+
 def printArgs(args):
     print(GREEN + str(args.load) + RESET) 
     print(GREEN + str(args.save) + RESET)
     print(GREEN + str(args.size) + RESET)
-    print(GREEN + str(args.max) + RESET) #handle
+    print(GREEN + str(args.max) + RESET)
     print(GREEN + str(args.visual) + RESET) #handle
     print(GREEN + str(args.nolearn) + RESET) #handle
     print(GREEN + str(args.stepbystep) + RESET) #handle
+
 
 def displayVisual():
     print()
@@ -64,12 +68,19 @@ def compute():
 def main():
     args = parse_args()
 
-    agent = Agent(args.load)
+    agent = Agent(12) # 12 = len(state)
+    if (args.load):
+        agent.load_state_dict(torch.load(args.load))
+        agent.eval()
+
     b = Environment(args.size)
 
+    b.start(agent, args.max)
+
     if args.save is not None:
-        # TODO save model
+        agent.save(args.save)
         print(GREEN + "Model Saved!", RESET)
+
 
 if __name__ == "__main__":
     main()

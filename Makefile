@@ -21,6 +21,9 @@ check:
 a:
 	python3 src/main.py -size 5 5
 
+t:
+	python3 src/main.py -load 'models/first.pth' -save 'models/first.pth' -max 20
+
 v:
 	python3 src/game.py
 
@@ -34,7 +37,7 @@ fclean: clean
 
 gpush: fclean
 	git add .
-	git commit -m "Playable"
+	git commit -m "Model Saved"
 	git push
 
 re: fclean all

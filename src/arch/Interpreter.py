@@ -7,7 +7,7 @@ class Interpreter:
     def getState(vision):
         state = []
         state.extend(
-            [1 if vision[i][0] == 'S' or vision[i][0] == 'W' else 0
+            [1 if len(vision[i]) == 0 or vision[i][0] == 'S' or vision[i][0] == 'W' else 0
                 for i in range(len(vision))]
         )
         state.extend(
