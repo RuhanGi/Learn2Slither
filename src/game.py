@@ -1,8 +1,9 @@
-# import pygame
-import torch
+from arch import Game
 
 def main():
-    print("hi")
+    g = Game(10, 10)
+    g.run()
+
 
 if __name__ == "__main__":
     main()

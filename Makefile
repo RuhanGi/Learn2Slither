@@ -38,7 +38,7 @@ fclean: clean
 
 gpush: fclean
 	git add .
-	git commit -m "Model Saved"
+	git commit -m "VISUALS"
 	git push
 
 re: fclean all
