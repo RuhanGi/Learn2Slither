@@ -65,10 +65,25 @@ class Game:
         mapps = {(-1, 0): 0, (0, 1): 1, (1, 0): 2, (0, -1): 3}
         self.direction = mapps[tuple(np.array(self.snake[-1])-np.array(self.snake[-2]))]
         self.alive = True
+        self.moves = 0
 
         self.board[self.get_random_empty_cell()] = 'G'
         self.board[self.get_random_empty_cell()] = 'G'
         self.board[self.get_random_empty_cell()] = 'R'
+
+    def getVision(self):
+        r, c = self.snake[-1]
+        vision = []
+        vision.append(self.board[r-1::-1, c])
+        vision.append(self.board[r, c+1:])
+        vision.append(self.board[r+1:, c])
+        vision.append(self.board[r, c-1::-1])
+        return vision
+
+    def getState(self):
+        vision = self.getVision()
+        # self.printVision(vision)
+        return Interpreter.getState(vision)
 
     def draw(self, path, x, y, rotate=0):
         surf = pygame.image.load(path)
@@ -112,6 +127,7 @@ class Game:
 
     def move(self, direction):
         self.direction = direction
+        self.moves += 1
         moves = [[-1, 0], [0, 1], [1, 0], [0, -1]]
         pos = tuple(np.array(self.snake[-1]) + moves[direction])
 
@@ -129,12 +145,12 @@ class Game:
                 self.board[cell] = i
 
         if i in ['S', 'W'] or len(self.snake) == 0:
-            print(RED + "Snake DIED!" + RESET)
             self.alive = False
         elif len(self.snake) > 0:
             self.updateSnake()
 
         if not self.alive:
+            print(f"Snake Died! Length = {len(self.snake)}, max duration = {self.moves}")
             self.sesscount += 1
             self.createBoard()
 
@@ -149,16 +165,23 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
-                elif event.key == pygame.K_w:
-                    self.move(0)
-                elif event.key == pygame.K_d:
-                    self.move(1)
-                elif event.key == pygame.K_s:
-                    self.move(2)
-                elif event.key == pygame.K_a:
-                    self.move(3)
+                # elif event.key == pygame.K_w:
+                #     self.move(0)
+                # elif event.key == pygame.K_d:
+                #     self.move(1)
+                # elif event.key == pygame.K_s:
+                #     self.move(2)
+                # elif event.key == pygame.K_a:
+                #     self.move(3)
             elif event.type == pygame.QUIT:
                 self.running = False
+
+    def agentCall(self, agent):
+        action = agent.act(state)
+        reward = self.move(action)
+        next_state = self.getState()
+        agent.train_step(state, action, reward, next_state, not self.alive)
+        state = next_state
 
     def run(self, agent, args):
         clock = pygame.time.Clock()
@@ -166,7 +189,7 @@ class Game:
         while self.running and self.sesscount < args.max:
             self.event_handler()
 
-            
+            self.agentCall(agent)
 
             self.renderBoard()
             pygame.display.update()
