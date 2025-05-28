@@ -26,7 +26,7 @@ t:
 	python3 src/main.py -load 'models/first.pth' -save 'models/first.pth' -max 20
 
 v:
-	python3 src/game.py
+	python3 src/game.py -size 5 5
 
 clean:
 	find . \( -name "__pycache__" -o -name ".DS_Store" \) -print0 | xargs -0 rm -rf
@@ -38,7 +38,7 @@ fclean: clean
 
 gpush: fclean
 	git add .
-	git commit -m "VISUALS"
+	git commit -m "restructure"
 	git push
 
 re: fclean all

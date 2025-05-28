@@ -18,9 +18,9 @@ class Game:
         Game Mechanics
     """
     # TODO REMEMBER FLAKE8
-    def __init__(self, rows, cols):
-        self.rows = rows+2
-        self.cols = cols+2
+    def __init__(self, size):
+        self.rows = size[0] + 2
+        self.cols = size[1] + 2
         self.scale = (min(800/self.rows, 800/self.cols)).__ceil__()
         self.WIDTH = self.scale * self.cols
         self.HEIGHT = self.scale * self.rows
@@ -41,7 +41,6 @@ class Game:
     def get_random_empty_cell(self):
         zero_cells = np.argwhere(self.board == '0')
         if zero_cells.size == 0:
-            print("NO EMPTY CELLS LEFT") # ! HANDLE THIS
             return None
         return tuple(zero_cells[np.random.choice(len(zero_cells))])
 
@@ -62,9 +61,9 @@ class Game:
         for i in range(2):
             self.board[self.snake[-1]] = 'S'
             self.snake.append(self.get_empty_cell(self.snake[-1]))
+        self.board[self.snake[-1]] = 'H'
         mapps = {(-1, 0): 0, (0, 1): 1, (1, 0): 2, (0, -1): 3}
         self.direction = mapps[tuple(np.array(self.snake[-1])-np.array(self.snake[-2]))]
-        self.board[self.snake[-1]] = 'H'
         self.alive = True
 
         self.board[self.get_random_empty_cell()] = 'G'
@@ -122,17 +121,22 @@ class Game:
         i = self.board[pos]
         self.snake.append(pos)
 
-        if i == 'G':
-            self.board[self.get_random_empty_cell()] = 'G'
-        elif i == 'R':
-            del self.snake[0]
-            self.board[self.get_random_empty_cell()] = 'R'
+        if i == 'G' or i == 'R':
+            if i == 'R':
+                del self.snake[0]
+            cell = self.get_random_empty_cell()
+            if cell is not None:
+                self.board[cell] = i
 
         if i in ['S', 'W'] or len(self.snake) == 0:
             print(RED + "Snake DIED!" + RESET)
             self.alive = False
         elif len(self.snake) > 0:
             self.updateSnake()
+
+        if not self.alive:
+            self.sesscount += 1
+            self.createBoard()
 
         rewards = {'G': 10, 'R': -10, '0': -1, 'S': -100, 'W': -100}
         return rewards[orig]
@@ -141,8 +145,6 @@ class Game:
         self.screen.fill('#87CEEB')
 
     def event_handler(self):
-        velocity = 5
-
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
@@ -158,14 +160,27 @@ class Game:
             elif event.type == pygame.QUIT:
                 self.running = False
 
-        if not self.alive:
-            self.createBoard()
-
-    def run(self):
+    def run(self, agent, args):
         clock = pygame.time.Clock()
-        while self.running:
+        self.sesscount = 0
+        while self.running and self.sesscount < args.max:
             self.event_handler()
+
+            
+
             self.renderBoard()
             pygame.display.update()
-            clock.tick(60)
+            clock.tick(args.fps)
         pygame.quit()
+
+    def printBoard(self):
+        if (len(self.snake) > 0):
+            self.updateSnake()
+        col = {'W': GRAY, 'S': PURPLE, 'H': YELLOW, 'G': GREEN, 'R': RED}
+        for row in self.board:
+            for cell in row:
+                if cell != '0':
+                    print(col[cell] + cell, end='')
+                else:
+                    print(' ', end='')
+            print(RESET)
