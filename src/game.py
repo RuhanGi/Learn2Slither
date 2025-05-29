@@ -1,4 +1,4 @@
-from arch import Game
+from arch import Agent, Game
 import argparse
 
 def parse_args():
@@ -14,7 +14,7 @@ def parse_args():
     parser.add_argument('-max', type=int, metavar='N',
         default=100, help='Maximum number of training sessions.')
     parser.add_argument('-fps', type=int, metavar='N',
-        default=60, help='Display speed (frames per second).')
+        default=40, help='Display speed (frames per second).')
 
     parser.add_argument('-v', '--visual', action='store_true',
         help='Display visuals during training.')
@@ -34,9 +34,13 @@ def main():
     args = parse_args()
     verify_args(args)
 
+    agent = Agent(12) # 12 = len(state)
+    agent.load(args.load)
 
-    g = Game(args.size)
-    g.run(None, args)
+    g = Game(args)
+    g.run(agent, args)
+
+    agent.save(args.save)
 
 
 if __name__ == "__main__":

@@ -1,3 +1,4 @@
+from .Interpreter import Interpreter
 import numpy as np
 import pygame
 
@@ -18,16 +19,19 @@ class Game:
         Game Mechanics
     """
     # TODO REMEMBER FLAKE8
-    def __init__(self, size):
-        self.rows = size[0] + 2
-        self.cols = size[1] + 2
+    def __init__(self, args):
+        self.rows = args.size[0] + 2
+        self.cols = args.size[1] + 2
         self.scale = (min(800/self.rows, 800/self.cols)).__ceil__()
         self.WIDTH = self.scale * self.cols
         self.HEIGHT = self.scale * self.rows
+        self.maxLength = 0
+        self.maxDuration = 0
 
         pygame.init()
-        self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
-        pygame.display.set_caption('Learn2Slither')
+        if args.visual:
+            self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+            pygame.display.set_caption('Learn2Slither')
         self.running = True
 
         self.createBoard()
@@ -150,7 +154,11 @@ class Game:
             self.updateSnake()
 
         if not self.alive:
-            print(f"Snake Died! Length = {len(self.snake)}, max duration = {self.moves}")
+            if len(self.snake) > self.maxLength:
+                self.maxLength = len(self.snake)
+            if self.moves > self.maxDuration:
+                self.maxDuration = self.moves
+            print(f"\rSnake Died! Length = {len(self.snake)}, Duration = {self.moves}", end=" " * 10)
             self.sesscount += 1
             self.createBoard()
 
@@ -176,25 +184,26 @@ class Game:
             elif event.type == pygame.QUIT:
                 self.running = False
 
-    def agentCall(self, agent):
-        action = agent.act(state)
-        reward = self.move(action)
-        next_state = self.getState()
-        agent.train_step(state, action, reward, next_state, not self.alive)
-        state = next_state
-
     def run(self, agent, args):
         clock = pygame.time.Clock()
         self.sesscount = 0
+
+        state = self.getState()
         while self.running and self.sesscount < args.max:
             self.event_handler()
 
-            self.agentCall(agent)
+            action = agent.act(state)
+            reward = self.move(action)
+            next_state = self.getState()
+            agent.train_step(state, action, reward, next_state, not self.alive)
+            state = next_state
 
-            self.renderBoard()
-            pygame.display.update()
+            if args.visual:
+                self.renderBoard()
+                pygame.display.update()
             clock.tick(args.fps)
         pygame.quit()
+        print(f"\rGame Over! Max Length = {self.maxLength}, max duration = {self.maxDuration}")
 
     def printBoard(self):
         if (len(self.snake) > 0):
