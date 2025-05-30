@@ -21,7 +21,7 @@ def parse_args():
     parser.add_argument('-n', '--nolearn', action='store_true',
         help='Disable learning (evaluation mode).')
     parser.add_argument('-s', '--stepbystep', action='store_true',
-        help='Enable step-by-step mode.')
+        help='Enable step-by-step mode.') # TODO implementation remaining
 
     return parser.parse_args()
 

@@ -1,6 +1,8 @@
 from .Interpreter import Interpreter
 import numpy as np
 import pygame
+import signal
+import sys
 
 
 RED     = "\033[31m"
@@ -188,6 +190,14 @@ class Game:
         clock = pygame.time.Clock()
         self.sesscount = 0
 
+        def handle_sigint(signal_number, frame):
+            print(f"\rGame Over! Max Length = {self.maxLength}, max duration = {self.maxDuration}")
+            agent.save(args.save)
+            pygame.quit()
+            sys.exit(0)
+
+        signal.signal(signal.SIGINT, handle_sigint)
+
         state = self.getState()
         while self.running and self.sesscount < args.max:
             self.event_handler()
@@ -195,7 +205,8 @@ class Game:
             action = agent.act(state)
             reward = self.move(action)
             next_state = self.getState()
-            agent.train_step(state, action, reward, next_state, not self.alive)
+            if not args.nolearn:
+                agent.train_step(state, action, reward, next_state, not self.alive)
             state = next_state
 
             if args.visual:
