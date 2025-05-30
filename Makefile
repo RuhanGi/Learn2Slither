@@ -22,8 +22,8 @@ a:
 	python3 src/game.py -size 5 5
 
 t:
-	# python3 src/game.py -save 'models/first.pth' -max 100 -fps 120
-	python3 src/game.py -load 'models/first.pth' -save 'models/first.pth' -max 10000 -fps 200
+	# python3 src/game.py -save 'models/first.pth' -max 20 -fps 200
+	python3 src/game.py -load 'models/first.pth' -save 'models/first.pth' -max 20 -fps 200
 
 v:
 	python3 src/game.py -size 5 5 -v

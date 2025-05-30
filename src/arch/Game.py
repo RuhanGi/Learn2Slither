@@ -27,8 +27,8 @@ class Game:
         self.scale = (min(800/self.rows, 800/self.cols)).__ceil__()
         self.WIDTH = self.scale * self.cols
         self.HEIGHT = self.scale * self.rows
-        self.maxLength = 0
-        self.maxDuration = 0
+        self.lengths = []
+        self.durations = []
 
         pygame.init()
         if args.visual:
@@ -155,17 +155,16 @@ class Game:
         elif len(self.snake) > 0:
             self.updateSnake()
 
-        if not self.alive:
-            if len(self.snake) > self.maxLength:
-                self.maxLength = len(self.snake)
-            if self.moves > self.maxDuration:
-                self.maxDuration = self.moves
+        done = not self.alive
+        if done:
+            self.lengths.append(len(self.snake))
+            self.durations.append(self.moves)
             print(f"\rSnake Died! Length = {len(self.snake)}, Duration = {self.moves}", end=" " * 10)
             self.sesscount += 1
             self.createBoard()
 
         rewards = {'G': 10, 'R': -10, '0': -1, 'S': -100, 'W': -100}
-        return rewards[orig]
+        return rewards[orig], done
 
     def renderMenu(self):
         self.screen.fill('#87CEEB')
@@ -191,7 +190,7 @@ class Game:
         self.sesscount = 0
 
         def handle_sigint(signal_number, frame):
-            print(f"\rGame Over! Max Length = {self.maxLength}, max duration = {self.maxDuration}")
+            print(f"\rGame Over! Max Length = {np.max(self.lengths)}, max duration = {np.max(self.durations)}")
             agent.save(args.save)
             pygame.quit()
             sys.exit(0)
@@ -203,10 +202,10 @@ class Game:
             self.event_handler()
 
             action = agent.act(state)
-            reward = self.move(action)
+            reward, done = self.move(action)
             next_state = self.getState()
             if not args.nolearn:
-                agent.train_step(state, action, reward, next_state, not self.alive)
+                agent.train_step(state, action, reward, next_state, done)
             state = next_state
 
             if args.visual:
@@ -214,7 +213,8 @@ class Game:
                 pygame.display.update()
             clock.tick(args.fps)
         pygame.quit()
-        print(f"\rGame Over! Max Length = {self.maxLength}, max duration = {self.maxDuration}")
+        print(f"\rGame Over! Max Length = {np.max(self.lengths)}, max duration = {np.max(self.durations)}")
+        print(f"\rGame Over! Avg Length = {np.average(self.lengths)}, avg duration = {np.average(self.durations)}")
 
     def printBoard(self):
         if (len(self.snake) > 0):
