@@ -23,10 +23,10 @@ a:
 
 t:
 	# python3 src/game.py -save 'models/first.pth' -max 20 -fps 200
-	python3 src/game.py -load 'models/first.pth' -save 'models/first.pth' -max 20 -fps 200
+	python3 src/game.py -load 'models/first.pth' -save 'models/first.pth' -max 2000 -fps 200
 
 v:
-	python3 src/game.py -size 5 5 -v
+	python3 src/game.py -load 'models/first.pth' -vn -fps 5
 
 clean:
 	find . \( -name "__pycache__" -o -name ".DS_Store" \) -print0 | xargs -0 rm -rf

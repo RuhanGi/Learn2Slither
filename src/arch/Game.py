@@ -101,19 +101,26 @@ class Game:
         self.screen.blit(surf, surf_rect)
 
     def renderBoard(self):
-        self.screen.fill('#99FF66')
         imgmap = {
             'W': './assets/Wall.png',
             'H': './assets/Head.png',
             'G': './assets/GreenApple.png',
             'R': './assets/RedApple.png'
         }
+
+        self.screen.fill('#A8E61D')
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if (i + j) % 2 == 0:
+                    self.draw('./assets/Grass.png', j, i)
+
         for i in range(self.rows):
             for j in range(self.cols):
                 if self.board[i][j] not in '0SH':
                     self.draw(imgmap[self.board[i][j]], j, i)
                 elif self.board[i][j] == 'H':
                     self.draw(imgmap[self.board[i][j]], j, i, rotate=-90 * self.direction)
+
 
         if len(self.snake) > 1:
             mapps = {(-1, 0): 0, (0, 1): 1, (1, 0): 2, (0, -1): 3}
