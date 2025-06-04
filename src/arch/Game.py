@@ -21,6 +21,9 @@ class Game:
         Game Mechanics
     """
     # TODO REMEMBER FLAKE8
+
+    # TODO Creating a lobby, a configuration panel, results, statistics, ...
+
     def __init__(self, args):
         self.rows = args.size[0] + 2
         self.cols = args.size[1] + 2
@@ -166,7 +169,7 @@ class Game:
         if done:
             self.lengths.append(len(self.snake))
             self.durations.append(self.moves)
-            print(f"\rSnake Died! Length = {len(self.snake)}, Duration = {self.moves}", end=" " * 10)
+            print(f"\rSnake Died! Length = {len(self.snake)}, Duration = {self.moves}\t\t", end=" " * 10)
             self.sesscount += 1
             self.createBoard()
 
@@ -181,6 +184,8 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
+                elif self.args.stepbystep:
+                    self.greenlight = True
                 # elif event.key == pygame.K_w:
                 #     self.move(0)
                 # elif event.key == pygame.K_d:
@@ -194,34 +199,41 @@ class Game:
 
     def run(self, agent, args):
         clock = pygame.time.Clock()
+        self.args = args
         self.sesscount = 0
 
         def handle_sigint(signal_number, frame):
-            print(f"\rGame Over! Max Length = {np.max(self.lengths)}, max duration = {np.max(self.durations)}")
-            agent.save(args.save)
-            pygame.quit()
-            sys.exit(0)
-
+            self.running = False
         signal.signal(signal.SIGINT, handle_sigint)
 
+        if args.stepbystep:
+            self.greenlight = False
+
         state = self.getState()
-        while self.running and self.sesscount < args.max:
+        while self.running and self.sesscount < args.sessions:
             self.event_handler()
 
-            action = agent.act(state)
-            reward, done = self.move(action)
-            next_state = self.getState()
-            if not args.nolearn:
-                agent.train_step(state, action, reward, next_state, done)
-            state = next_state
+            if not args.stepbystep or self.greenlight:
+                action = agent.act(state, args)
+                reward, done = self.move(action)
+                next_state = self.getState()
+                if not args.nolearn:
+                    agent.train_step(state, action, reward, next_state, done)
+                state = next_state
+                if args.stepbystep:
+                    self.greenlight = False
 
             if args.visual:
                 self.renderBoard()
                 pygame.display.update()
             clock.tick(args.fps)
         pygame.quit()
-        print(f"\rGame Over! Max Length = {np.max(self.lengths)}, max duration = {np.max(self.durations)}")
-        print(f"\rGame Over! Avg Length = {np.average(self.lengths)}, avg duration = {np.average(self.durations)}")
+
+        if len(self.lengths) > 0:
+            print(f"\rGame Over!\nMax Length = {np.max(self.lengths)}, max duration = {np.max(self.durations)}")
+            print(f"Avg Length = {np.average(self.lengths)}, avg duration = {np.average(self.durations)}")
+        else:
+            print(f"\rGame Ended! Length = {len(self.snake)}, max duration = {self.moves}")
 
     def printBoard(self):
         if (len(self.snake) > 0):
@@ -234,3 +246,16 @@ class Game:
                 else:
                     print(' ', end='')
             print(RESET)
+
+    def printVision(self, vision):
+        padd = len(vision[-1])
+        for c in reversed(vision[0]):
+            print(padd * ' ' + c)
+        for c in reversed(vision[-1]):
+            print(c, end='')
+        print('S', end='')
+        for c in vision[1]:
+            print(c, end='')
+        print()
+        for c in vision[2]:
+            print(padd * ' ' + c)

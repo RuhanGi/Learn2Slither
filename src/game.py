@@ -1,5 +1,6 @@
 from arch import Agent, Game
 import argparse
+import sys
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Learn2Slither.")
@@ -11,8 +12,8 @@ def parse_args():
 
     parser.add_argument('-size', type=int, nargs=2, metavar=('ROWS', 'COLS'),
         default=[10, 10], help='Set board size with rows and cols.')
-    parser.add_argument('-max', type=int, metavar='N',
-        default=100, help='Maximum number of training sessions.')
+    parser.add_argument('-sessions', type=int, metavar='N',
+        default=100, help='Number of training sessions.')
     parser.add_argument('-fps', type=int, metavar='N',
         default=40, help='Display speed (frames per second).')
 
@@ -21,17 +22,24 @@ def parse_args():
     parser.add_argument('-n', '--nolearn', action='store_true',
         help='Disable learning (evaluation mode).')
     parser.add_argument('-s', '--stepbystep', action='store_true',
-        help='Enable step-by-step mode.') # TODO implementation remaining
+        help='Enable step-by-step mode.')
 
-    return parser.parse_args()
+    return parser
 
 def verify_args(args):
     assert args.size[0] > 2 and args.size[1] > 2, "improper board size"
     if args.visual:
         assert args.size[0] <= 100 and args.size[1] <= 100, "improper board size"
+    else:
+        assert not args.stepbystep, "step-by-step reserved for GUI"
 
 def main():
-    args = parse_args()
+    parser = parse_args()
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(0)
+
+    args = parser.parse_args()
     verify_args(args)
 
     agent = Agent(12) # 12 = len(state)

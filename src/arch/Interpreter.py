@@ -17,3 +17,5 @@ class Interpreter:
             [1 if 'R' in vision[i] else 0 for i in range(len(vision))]
         )
         return state
+    
+    #TODO Achieving a higher length at the end of a session (15, 20, 25, 30, 35).
