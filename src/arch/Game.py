@@ -169,7 +169,7 @@ class Game:
         if done:
             self.lengths.append(len(self.snake))
             self.durations.append(self.moves)
-            print(f"\rSnake Died! Length = {len(self.snake)}, Duration = {self.moves}\t\t", end=" " * 10)
+            print(f"\rSnake Died! Length = {len(self.snake)}, Duration = {self.moves}    ", end="\t")
             self.sesscount += 1
             self.createBoard()
 
@@ -230,8 +230,9 @@ class Game:
         pygame.quit()
 
         if len(self.lengths) > 0:
-            print(f"\rGame Over!\nMax Length = {np.max(self.lengths)}, max duration = {np.max(self.durations)}")
-            print(f"Avg Length = {np.average(self.lengths)}, avg duration = {np.average(self.durations)}")
+            print(f"\rGame Over!" + " " * 30)
+            print(f"Max Length = {np.max(self.lengths)}, max duration = {np.max(self.durations)}")
+            print(f"Avg Length = {np.average(self.lengths):.2f}, avg duration = {np.average(self.durations):.2f}")
         else:
             print(f"\rGame Ended! Length = {len(self.snake)}, max duration = {self.moves}")
 

@@ -42,7 +42,8 @@ def main():
     args = parser.parse_args()
     verify_args(args)
 
-    agent = Agent(12) # 12 = len(state)
+    # agent = Agent(12) # 12 = len(state)
+    agent = Agent(14) # 12 = len(state)
     agent.load(args.load)
 
     g = Game(args)

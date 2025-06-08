@@ -42,7 +42,7 @@ class Agent:
         self.lr = 0.01
 
         self.epsilon = 0.1
-        self.epsilon_min = 0.001
+        self.epsilon_min = 0.01
         self.epsilon_decay = 0.995
 
         self.action_size = 4
@@ -52,12 +52,21 @@ class Agent:
         self.optimizer = optim.Adam(self.qnet.parameters(), lr=self.lr)
         self.criterion = nn.MSELoss()
 
+    # def act(self, state, args) -> int:
+    #     self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)
+    #     if not args.nolearn and torch.rand(1).item() < self.epsilon:
+    #         return torch.randint(0, 4, (1,)).item()
+    #     with torch.no_grad():
+    #         qs = self.qnet(torch.tensor(state, dtype=torch.float32))
+    #         return torch.argmax(qs).item()
+
     def act(self, state, args) -> int:
         self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)
-        if not args.nolearn and torch.rand(1).item() < self.epsilon:
-            return torch.randint(0, 4, (1,)).item()
         with torch.no_grad():
             qs = self.qnet(torch.tensor(state, dtype=torch.float32))
+            if not args.nolearn and torch.rand(1).item() < self.epsilon:
+                sorted_indices = torch.argsort(qs, descending=True).tolist()
+                return sorted_indices[torch.randint(1, 3, (1,)).item()]
             return torch.argmax(qs).item()
 
     def train_step(
