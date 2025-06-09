@@ -46,7 +46,7 @@ fclean: clean
 
 gpush: fclean
 	git add .
-	git commit -m "Cleaning"
+	git commit -m "Menu"
 	git push
 
 re: fclean all

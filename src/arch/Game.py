@@ -37,7 +37,7 @@ class Game:
         self.cols = args.size[1] + 2
         self.scale = (min(800/self.rows, 800/self.cols)).__ceil__()
         self.WIDTH = self.scale * self.cols
-        self.HEIGHT = self.scale * self.rows
+        self.HEIGHT = self.scale * self.rows + 100
         self.lengths = []
         self.durations = []
 
@@ -45,8 +45,8 @@ class Game:
         if args.visual:
             self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
             pygame.display.set_caption('Learn2Slither')
-        self.running = True
 
+        self.running = True
         self.createBoard()
 
     def updateSnake(self):
@@ -184,9 +184,6 @@ class Game:
         rewards = {'G': 10, 'R': -10, '0': -1, 'S': -100, 'W': -100}
         return rewards[orig], done
 
-    def renderMenu(self):
-        self.screen.fill('#87CEEB')
-
     def event_handler(self):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -194,18 +191,27 @@ class Game:
                     self.running = False
                 elif self.args.stepbystep:
                     self.greenlight = True
-                # elif event.key == pygame.K_w:
-                #     self.move(0)
-                # elif event.key == pygame.K_d:
-                #     self.move(1)
-                # elif event.key == pygame.K_s:
-                #     self.move(2)
-                # elif event.key == pygame.K_a:
-                #     self.move(3)
             elif event.type == pygame.QUIT:
                 self.running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                print("REACH")
+                if self.quitButton.collidepoint(events.pos)
+                    self.running = False
+
+    def renderMenu(self):
+        self.screen.fill('#87CEEB')
+        self.quitButton = 
+
+    def menu_handler(self):
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.running = False
+            elif event.type == pygame.QUIT:
+                self.running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if self.quitButton.collidepoint(events.pos)
+                    self.running = False
+        # x, y = pygame.mouse.get_pos()
 
     def run(self, agent, args):
         clock = pygame.time.Clock()
@@ -219,24 +225,30 @@ class Game:
         if args.stepbystep:
             self.greenlight = False
 
-        state = self.getState()
-        while self.running and self.sesscount < args.sessions:
-            self.event_handler()
+        while self.running:
+            self.menu_handler()
+            self.renderMenu()
+            clock.tick(60)
 
-            if not args.stepbystep or self.greenlight:
-                action = agent.act(state, args)
-                reward, done = self.move(action)
-                next_state = self.getState()
-                if not args.nolearn:
-                    agent.train_step(state, action, reward, next_state, done)
-                state = next_state
-                if args.stepbystep:
-                    self.greenlight = False
+        # state = self.getState()
+        # while self.running and self.sesscount < args.sessions:
+        #     self.event_handler()
 
-            if args.visual:
-                self.renderBoard()
-                pygame.display.update()
-            clock.tick(args.fps)
+        #     if not args.stepbystep or self.greenlight:
+        #         action = agent.act(state, args)
+        #         reward, done = self.move(action)
+        #         next_state = self.getState()
+        #         if not args.nolearn:
+        #             agent.train_step(state, action, reward, next_state, done)
+        #         state = next_state
+        #         if args.stepbystep:
+        #             self.greenlight = False
+
+        #     if args.visual:
+        #         self.renderBoard()
+        #         pygame.display.update()
+        #     self.renderMenu()
+        #     clock.tick(args.fps)
         pygame.quit()
 
         if len(self.lengths) > 0:
