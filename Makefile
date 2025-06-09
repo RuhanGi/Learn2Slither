@@ -1,4 +1,4 @@
-PKGS = numpy
+PKGS = numpy pygame
 
 GREY   = \033[30m
 GREEN  = \033[32m
@@ -27,11 +27,11 @@ t:
 
 d:
 	# python3 src/game.py -save 'models/dist.pth' -sessions 20 -fps 200
-	python3 src/game.py -load 'models/dist.pth' -save 'models/dist.pth' -sessions 2000 -fps 2000
+	python3 src/game.py -load 'models/dist.pth' -save 'models/dist.pth' -sessions 200 -fps 2000
 
 v:
 	# python3 src/game.py -load 'models/first.pth' -vn -fps 7
-	python3 src/game.py -load 'models/dist.pth' -vn -fps 7
+	python3 src/game.py -load 'models/dist.pth' -vn -fps 2000
 
 s:
 	python3 src/game.py -load 'models/first.pth' -vns -fps 7

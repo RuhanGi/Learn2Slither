@@ -43,7 +43,7 @@ def main():
     verify_args(args)
 
     # agent = Agent(12) # 12 = len(state)
-    agent = Agent(14) # 12 = len(state)
+    agent = Agent(14)
     agent.load(args.load)
 
     g = Game(args)

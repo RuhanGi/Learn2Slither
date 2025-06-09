@@ -23,6 +23,14 @@ class Game:
     # TODO REMEMBER FLAKE8
 
     # TODO Creating a lobby, a configuration panel, results, statistics, ...
+    # Lobby 
+    # START
+    # settings, statistics
+
+    # during training, have slider for speed, and button for ending
+
+    # after training display results: 
+
 
     def __init__(self, args):
         self.rows = args.size[0] + 2
@@ -196,6 +204,8 @@ class Game:
                 #     self.move(3)
             elif event.type == pygame.QUIT:
                 self.running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                print("REACH")
 
     def run(self, agent, args):
         clock = pygame.time.Clock()

@@ -24,12 +24,9 @@ class Interpreter:
 
     @staticmethod
     def getDist(sight):
-        foresight = 4
-        reach = 0
-        while reach < min(len(sight), foresight):
-            if sight[reach] == 'S' or sight[reach] == 'W':
-                break
-            reach += 1
-        return round(1 - reach / foresight, 2)
+        for i in range(len(sight)):
+            if sight[i] == 'S' or sight[i] == 'W':
+                return i
+        return len(sight)
 
     #TODO Achieving a higher length at the end of a session (15, 20, 25, 30, 35).

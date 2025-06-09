@@ -69,14 +69,7 @@ class Agent:
                 return sorted_indices[torch.randint(1, 3, (1,)).item()]
             return torch.argmax(qs).item()
 
-    def train_step(
-            self,
-            state,
-            action: int,
-            reward: float,
-            next_state,
-            done: bool
-    ):
+    def train_step(self, state, action, reward, next_state, done):
         state = torch.tensor(state, dtype=torch.float32)
         next_state = torch.tensor(next_state, dtype=torch.float32)
         reward = torch.tensor(reward, dtype=torch.float32)
