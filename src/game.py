@@ -1,4 +1,4 @@
-from arch import Agent, Game
+from arch import Agent, Menu, Game
 import argparse
 import sys
 
@@ -42,7 +42,11 @@ def main():
     args = parser.parse_args()
     verify_args(args)
 
-    # agent = Agent(12) # 12 = len(state)
+    if args.visual:
+        m = Menu(args)
+        m.run()
+        args = m.args
+
     agent = Agent(14)
     agent.load(args.load)
 

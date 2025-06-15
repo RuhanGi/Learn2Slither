@@ -31,7 +31,11 @@ d:
 
 v:
 	# python3 src/game.py -load 'models/first.pth' -vn -fps 7
-	python3 src/game.py -load 'models/dist.pth' -vn -fps 2000
+	python3 src/game.py -load 'models/dist.pth' -sessions 200 -fps 2000
+	# python3 src/game.py -load 'models/dist.pth' -v -fps 7
+
+m:
+	python3 src/game.py -v
 
 s:
 	python3 src/game.py -load 'models/first.pth' -vns -fps 7

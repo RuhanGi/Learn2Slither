@@ -21,16 +21,7 @@ class Game:
         Game Mechanics
     """
     # TODO REMEMBER FLAKE8
-
-    # TODO Creating a lobby, a configuration panel, results, statistics, ...
-    # Lobby 
-    # START
-    # settings, statistics
-
-    # during training, have slider for speed, and button for ending
-
-    # after training display results: 
-
+    # TODO after training display results, statistics, ...
 
     def __init__(self, args):
         self.rows = args.size[0] + 2
@@ -38,6 +29,7 @@ class Game:
         self.scale = (min(800/self.rows, 800/self.cols)).__ceil__()
         self.WIDTH = self.scale * self.cols
         self.HEIGHT = self.scale * self.rows + 100
+        # TODO SLIDER FOR FPS speed
         self.lengths = []
         self.durations = []
 
@@ -193,25 +185,9 @@ class Game:
                     self.greenlight = True
             elif event.type == pygame.QUIT:
                 self.running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if self.quitButton.collidepoint(events.pos)
-                    self.running = False
-
-    def renderMenu(self):
-        self.screen.fill('#87CEEB')
-        self.quitButton = 
-
-    def menu_handler(self):
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    self.running = False
-            elif event.type == pygame.QUIT:
-                self.running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if self.quitButton.collidepoint(events.pos)
-                    self.running = False
-        # x, y = pygame.mouse.get_pos()
+            # elif event.type == pygame.MOUSEBUTTONDOWN:
+            #     if self.quitButton.collidepoint(events.pos)
+            #         self.running = False
 
     def run(self, agent, args):
         clock = pygame.time.Clock()
@@ -225,30 +201,24 @@ class Game:
         if args.stepbystep:
             self.greenlight = False
 
-        while self.running:
-            self.menu_handler()
-            self.renderMenu()
-            clock.tick(60)
+        state = self.getState()
+        while self.running and self.sesscount < args.sessions:
+            self.event_handler()
 
-        # state = self.getState()
-        # while self.running and self.sesscount < args.sessions:
-        #     self.event_handler()
+            if not args.stepbystep or self.greenlight:
+                action = agent.act(state, args)
+                reward, done = self.move(action)
+                next_state = self.getState()
+                if not args.nolearn:
+                    agent.train_step(state, action, reward, next_state, done)
+                state = next_state
+                if args.stepbystep:
+                    self.greenlight = False
 
-        #     if not args.stepbystep or self.greenlight:
-        #         action = agent.act(state, args)
-        #         reward, done = self.move(action)
-        #         next_state = self.getState()
-        #         if not args.nolearn:
-        #             agent.train_step(state, action, reward, next_state, done)
-        #         state = next_state
-        #         if args.stepbystep:
-        #             self.greenlight = False
-
-        #     if args.visual:
-        #         self.renderBoard()
-        #         pygame.display.update()
-        #     self.renderMenu()
-        #     clock.tick(args.fps)
+            if args.visual:
+                self.renderBoard()
+                pygame.display.update()
+            clock.tick(args.fps)
         pygame.quit()
 
         if len(self.lengths) > 0:
