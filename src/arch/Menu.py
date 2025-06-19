@@ -1,16 +1,19 @@
-from .Button import Button
+import pygame_widgets
 import pygame
 import sys
 
 class Configuration:
     def __init__(self):
         print("CONFY")
-        # TODO load and save texts
-        # save under same name conf
-        # size input, button to increase/decrease
-        # session input
-        # stepbystep and nolearn switches
- 
+        # TODO conf 
+        # ? LOAD [textbox]
+        # ? [button] to save/update model
+        # ? SAVE [textbox]
+        # ?    SIZE      SESSION
+        # ?  /\ <=10=>   [textbox]
+        # ?  10         stepbystep [switch]
+        # ?  \/         nolearn [switch]
+
 
 class Menu:
     def __init__(self, args):
@@ -22,9 +25,11 @@ class Menu:
         image = pygame.image.load("assets/Menu.png").convert()
         image = pygame.transform.scale(image, (self.WIDTH, self.HEIGHT))
         self.screen.blit(image, (0, 0))
-        self.playButton = Button((250, 520), (300, 100))
-        self.confButton = Button((250, 650), (130, 120))
-        self.exitButton = Button((420, 650), (130, 120))
+
+        self.playButton = pygame.Rect((250, 520), (300, 100))
+        self.confButton = pygame.Rect((250, 650), (130, 120))
+        self.exitButton = pygame.Rect((420, 650), (130, 120))
+    
         pygame.display.update()
 
     def exit(self):
@@ -32,7 +37,8 @@ class Menu:
         sys.exit(0)
 
     def menu_handler(self):
-        for event in pygame.event.get():
+        events = pygame.event.get()
+        for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.exit()
@@ -40,12 +46,14 @@ class Menu:
                     self.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # print(event.pos)
-                if self.playButton.rect.collidepoint(event.pos):
+                if self.playButton.collidepoint(event.pos):
                     self.running = False
-                elif self.confButton.rect.collidepoint(event.pos):
+                elif self.confButton.collidepoint(event.pos):
                     print("Conf")
-                elif self.exitButton.rect.collidepoint(event.pos):
+                elif self.exitButton.collidepoint(event.pos):
                     self.exit()
+        pygame_widgets.update(events)
+        pygame.display.update()
 
     def run(self):
         pygame.init()

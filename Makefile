@@ -22,8 +22,7 @@ a:
 	python3 src/game.py -load 'models/first.pth' -size 10 20 -n
 
 t:
-	# python3 src/game.py -save 'models/first.pth' -sessions 20 -fps 200
-	python3 src/game.py -load 'models/first.pth' -save 'models/first.pth' -sessions 2000 -fps 2000
+	python3 src/game.py -load 'models/dist.pth' -sessions 200 -fps 2000
 
 d:
 	# python3 src/game.py -save 'models/dist.pth' -sessions 20 -fps 200
@@ -31,8 +30,7 @@ d:
 
 v:
 	# python3 src/game.py -load 'models/first.pth' -vn -fps 7
-	python3 src/game.py -load 'models/dist.pth' -sessions 200 -fps 2000
-	# python3 src/game.py -load 'models/dist.pth' -v -fps 7
+	python3 src/game.py -load 'models/dist.pth' -v -fps 7
 
 m:
 	python3 src/game.py -v
@@ -50,7 +48,7 @@ fclean: clean
 
 gpush: fclean
 	git add .
-	git commit -m "Menu"
+	git commit -m "Slider"
 	git push
 
 re: fclean all

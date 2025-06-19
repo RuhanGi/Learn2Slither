@@ -42,10 +42,10 @@ def main():
     args = parser.parse_args()
     verify_args(args)
 
-    if args.visual:
-        m = Menu(args)
-        m.run()
-        args = m.args
+    # if args.visual:
+    #     m = Menu(args)
+    #     m.run()
+    #     args = m.args
 
     agent = Agent(14)
     agent.load(args.load)
@@ -57,9 +57,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
-    # try:
-    #     main()
-    # except Exception as e:
-    #     print(RED + "Error: " + str(e) + RESET)
-    #     sys.exit(1)
+    # main()
+    try:
+        main()
+    except Exception as e:
+        print(RED + "Error: " + str(e) + RESET)
+        sys.exit(1)

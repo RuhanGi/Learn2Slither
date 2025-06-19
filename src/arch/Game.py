@@ -1,8 +1,10 @@
-from .Interpreter import Interpreter
 import numpy as np
 import pygame
+import pygame_widgets
+from pygame_widgets.slider import Slider
 import signal
 import sys
+from .Interpreter import Interpreter
 
 
 RED     = "\033[31m"
@@ -28,14 +30,16 @@ class Game:
         self.cols = args.size[1] + 2
         self.scale = (min(800/self.rows, 800/self.cols)).__ceil__()
         self.WIDTH = self.scale * self.cols
-        self.HEIGHT = self.scale * self.rows + 100
-        # TODO SLIDER FOR FPS speed
+        self.HEIGHT = self.scale * self.rows
+
         self.lengths = []
         self.durations = []
 
-        pygame.init()
         if args.visual:
-            self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+            pygame.init()
+            self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT + 100))
+            self.screen.fill('#A8E61D')
+            self.slider = Slider(self.screen, self.WIDTH/8, self.HEIGHT+20, 600, 60, min_value=1, max_value=500, initial=args.fps, colour=(0,0,0), handleColour=(168, 230, 29), handleRadius=30)
             pygame.display.set_caption('Learn2Slither')
 
         self.running = True
@@ -111,7 +115,8 @@ class Game:
             'R': './assets/RedApple.png'
         }
 
-        self.screen.fill('#A8E61D')
+        # self.screen.fill('#A8E61D')
+        self.screen.fill('#A8E61D', pygame.Rect(0, 0, self.WIDTH, self.HEIGHT))
         for i in range(self.rows):
             for j in range(self.cols):
                 if (i + j) % 2 == 0:
@@ -157,7 +162,7 @@ class Game:
             if i == 'R':
                 del self.snake[0]
             cell = self.get_random_empty_cell()
-            if cell is not None:
+            if cell:
                 self.board[cell] = i
 
         if i in ['S', 'W'] or len(self.snake) == 0:
@@ -169,7 +174,7 @@ class Game:
         if done:
             self.lengths.append(len(self.snake))
             self.durations.append(self.moves)
-            print(f"\rSnake Died! Length = {len(self.snake)}, Duration = {self.moves}    ", end="\t")
+            print(f"\rSnake Died! Length = {len(self.snake)}, Duration = {self.moves}     \t", end="")
             self.sesscount += 1
             self.createBoard()
 
@@ -177,7 +182,8 @@ class Game:
         return rewards[orig], done
 
     def event_handler(self):
-        for event in pygame.event.get():
+        events = pygame.event.get()
+        for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
@@ -185,9 +191,7 @@ class Game:
                     self.greenlight = True
             elif event.type == pygame.QUIT:
                 self.running = False
-            # elif event.type == pygame.MOUSEBUTTONDOWN:
-            #     if self.quitButton.collidepoint(events.pos)
-            #         self.running = False
+        pygame_widgets.update(events)
 
     def run(self, agent, args):
         clock = pygame.time.Clock()
@@ -203,7 +207,6 @@ class Game:
 
         state = self.getState()
         while self.running and self.sesscount < args.sessions:
-            self.event_handler()
 
             if not args.stepbystep or self.greenlight:
                 action = agent.act(state, args)
@@ -216,11 +219,14 @@ class Game:
                     self.greenlight = False
 
             if args.visual:
+                self.event_handler()
                 self.renderBoard()
+                args.fps = self.slider.getValue()
                 pygame.display.update()
             clock.tick(args.fps)
+    
         pygame.quit()
-
+    
         if len(self.lengths) > 0:
             print(f"\rGame Over!" + " " * 30)
             print(f"Max Length = {np.max(self.lengths)}, max duration = {np.max(self.durations)}")
