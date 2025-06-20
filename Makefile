@@ -48,7 +48,7 @@ fclean: clean
 
 gpush: fclean
 	git add .
-	git commit -m "Slider"
+	git commit -m "Configuration Panel"
 	git push
 
 re: fclean all

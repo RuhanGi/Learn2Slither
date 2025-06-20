@@ -1,10 +1,9 @@
 import numpy as np
 import pygame
-import pygame_widgets
-from pygame_widgets.slider import Slider
 import signal
 import sys
 from .Interpreter import Interpreter
+from .Slider import Slider
 
 
 RED     = "\033[31m"
@@ -17,6 +16,7 @@ GRAY    = "\033[90m"
 BLACK   = "\033[30m"
 WHITE   = "\033[37m"
 RESET   = "\033[0m"
+
 
 class Game:
     """
@@ -38,8 +38,7 @@ class Game:
         if args.visual:
             pygame.init()
             self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT + 100))
-            self.screen.fill('#A8E61D')
-            self.slider = Slider(self.screen, self.WIDTH/8, self.HEIGHT+20, 600, 60, min_value=1, max_value=500, initial=args.fps, colour=(0,0,0), handleColour=(168, 230, 29), handleRadius=30)
+            self.slider = Slider((100, self.HEIGHT + 20), (600, 60), args.fps, 1, 60)
             pygame.display.set_caption('Learn2Slither')
 
         self.running = True
@@ -115,8 +114,7 @@ class Game:
             'R': './assets/RedApple.png'
         }
 
-        # self.screen.fill('#A8E61D')
-        self.screen.fill('#A8E61D', pygame.Rect(0, 0, self.WIDTH, self.HEIGHT))
+        self.screen.fill('#A8E61D')
         for i in range(self.rows):
             for j in range(self.cols):
                 if (i + j) % 2 == 0:
@@ -145,6 +143,8 @@ class Game:
                     self.draw('./assets/CornerSnake.png', temp[1], temp[0], rotate=-90 * (direc2+2))
                 else:
                     self.draw('./assets/CornerSnake.png', temp[1], temp[0], rotate=-90 * (direc1+2))
+
+        self.slider.render(self.screen)
 
     def move(self, direction):
         self.direction = direction
@@ -191,7 +191,11 @@ class Game:
                     self.greenlight = True
             elif event.type == pygame.QUIT:
                 self.running = False
-        pygame_widgets.update(events)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if self.slider.container_rect.collidepoint(event.pos):
+                    self.slider.hovered = True
+            elif event.type == pygame.MOUSEBUTTONUP:
+                self.slider.hovered = False
 
     def run(self, agent, args):
         clock = pygame.time.Clock()
@@ -221,7 +225,7 @@ class Game:
             if args.visual:
                 self.event_handler()
                 self.renderBoard()
-                args.fps = self.slider.getValue()
+                args.fps = self.slider.get_value()
                 pygame.display.update()
             clock.tick(args.fps)
     

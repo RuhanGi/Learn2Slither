@@ -42,10 +42,10 @@ def main():
     args = parser.parse_args()
     verify_args(args)
 
-    # if args.visual:
-    #     m = Menu(args)
-    #     m.run()
-    #     args = m.args
+    if args.visual:
+        m = Menu(args)
+        m.run()
+        args = m.args
 
     agent = Agent(14)
     agent.load(args.load)
