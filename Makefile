@@ -30,13 +30,13 @@ d:
 
 v:
 	# python3 src/game.py -load 'models/first.pth' -vn -fps 7
-	python3 src/game.py -load 'models/dist.pth' -v -fps 7
+	python3 src/game.py -load 'models/dist.pth' -vsn -fps 7
 
 m:
 	python3 src/game.py -v
 
 s:
-	python3 src/game.py -load 'models/first.pth' -vns -fps 7
+	python3 src/game.py -load 'models/dist.pth' -vns -fps 7
 
 clean:
 	find . \( -name "__pycache__" -o -name ".DS_Store" \) -print0 | xargs -0 rm -rf

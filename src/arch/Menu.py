@@ -10,21 +10,28 @@ class Configuration:
     def __init__(self, screen, args):
         self.screen = screen
         self.sliders = [
-            Slider((100, 100), (600, 100), 5, 1, 10), # ? LOAD [textbox]
-            Slider((100, 270), (200, 60), 0, 0, 1), # ? [switch] SAVE same as LOAD
-            Slider((400, 250), (300, 100), 5, 1, 10), # ? SAVE [textbox]
-            Slider((200, 450), (200, 100), 10, 5, 20), # ? ROWS
-            Slider((100, 550), (100, 200), 10, 5, 20), # ? COLS
-            # Slider((100, 100), (600, 60), 100, 1, 2000), # ? [textbox] SESSIONS
-            Slider((500, 470), (200, 60), 0, 0, 1), # ? [switch] stepbystep
-            Slider((500, 620), (200, 60), 0, 0, 1) # ? [switch] nolearn
+            Slider((460, 130), (230, 70), args.sessions, 1, 2000), # ? SESSIONS
+            Slider((460, 230), (230, 70), args.size[0], 5, 20), # ? ROWS
+            Slider((460, 330), (230, 70), args.size[1], 5, 20), # ? COLS
+            Slider((610, 435), (60, 60), args.stepbystep, 0, 1, widthB=40), # ? stepbystep
+            Slider((610, 535), (60, 60), args.nolearn, 0, 1, widthB=40) # ? nolearn
         ]
+        self.exitButton = pygame.Rect((250, 630), (300, 100))
         self.running = True
         clock = pygame.time.Clock()
         while self.running:
             self.renderConf()
             self.event_handler()
             clock.tick(60)
+        self.setArgs(args)
+
+    def setArgs(self, args):
+        args.sessions = self.sliders[0].value
+        args.size[0] = self.sliders[1].value
+        args.size[1] = self.sliders[2].value
+        args.stepbystep = self.sliders[3].value
+        args.nolearn = self.sliders[4].value
+        self.args = args
 
     def event_handler(self):
         events = pygame.event.get()
@@ -34,22 +41,23 @@ class Configuration:
                     exits()
             elif event.type == pygame.QUIT:
                 exits()
-            # elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                for s in self.sliders:
+                    if s.container_rect.collidepoint(event.pos):
+                        s.hovered = True
+                if self.exitButton.collidepoint(event.pos):
+                    self.running = False
+            elif event.type == pygame.MOUSEBUTTONUP:
+                for s in self.sliders:
+                    s.hovered = False
 
     def renderConf(self):
-        self.screen.fill('#A8E61D')
+        image = pygame.image.load("assets/Conf.png").convert()
+        image = pygame.transform.scale(image, (800, 800))
+        self.screen.blit(image, (0, 0))
         for s in self.sliders:
             s.render(self.screen)
         pygame.display.update()
-
-        # TODO conf 
-        # ? LOAD [textbox]
-        # ? [button] to save/update model
-        # ? SAVE [textbox]
-        # ?    SIZE      SESSION
-        # ?  /\ <=10=>   [textbox]
-        # ?  10         stepbystep [switch]
-        # ?  \/         nolearn [switch]
 
 
 class Menu:
@@ -81,8 +89,9 @@ class Menu:
                 if self.playButton.collidepoint(event.pos):
                     self.running = False
                 elif self.confButton.collidepoint(event.pos):
-                    # print("Conf")
-                    Configuration(self.screen, self.args)
+                    c = Configuration(self.screen, self.args)
+                    self.args = c.args
+                    self.renderMenu()
                 elif self.exitButton.collidepoint(event.pos):
                     exits()
         pygame.display.update()
@@ -100,6 +109,3 @@ class Menu:
             self.menu_handler()
             clock.tick(60)
         pygame.quit()
-
-    def getArgs(self):
-        return self.args

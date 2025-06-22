@@ -28,5 +28,3 @@ class Interpreter:
             if sight[i] == 'S' or sight[i] == 'W':
                 return i
         return len(sight)
-
-    #TODO Achieving a higher length at the end of a session (15, 20, 25, 30, 35).

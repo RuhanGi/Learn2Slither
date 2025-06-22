@@ -38,7 +38,7 @@ class Game:
         if args.visual:
             pygame.init()
             self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT + 100))
-            self.slider = Slider((100, self.HEIGHT + 20), (600, 60), args.fps, 1, 60)
+            self.slider = Slider((self.WIDTH/8, self.HEIGHT + 20), (self.WIDTH * 3/4, 60), args.fps, 1, 60)
             pygame.display.set_caption('Learn2Slither')
 
         self.running = True
