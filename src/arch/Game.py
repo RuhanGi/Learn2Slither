@@ -25,6 +25,11 @@ class Game:
     # TODO REMEMBER FLAKE8
     # TODO after training display results, statistics, ...
 
+    # ? Statistics: max, avg, wall vs self, win rate >= 10
+    # * Results: 
+    # * 1. Avg Length over training
+
+
     def __init__(self, args):
         self.rows = args.size[0] + 2
         self.cols = args.size[1] + 2

@@ -17,6 +17,8 @@ class Configuration:
             Slider((610, 535), (60, 60), args.nolearn, 0, 1, widthB=40) # ? nolearn
         ]
         self.exitButton = pygame.Rect((250, 630), (300, 100))
+
+        pygame.display.set_caption('Configuration Panel')
         self.running = True
         clock = pygame.time.Clock()
         while self.running:
@@ -51,12 +53,19 @@ class Configuration:
                 for s in self.sliders:
                     s.hovered = False
 
+    def draw_text(self, text, font, text_col, x, y):
+        img = font.render(text, True, text_col)
+        self.screen.blit(img, (x, y))
+
     def renderConf(self):
         image = pygame.image.load("assets/Conf.png").convert()
         image = pygame.transform.scale(image, (800, 800))
         self.screen.blit(image, (0, 0))
         for s in self.sliders:
             s.render(self.screen)
+        text_font = pygame.font.SysFont("Arial", 60)
+        self.draw_text(str(self.sliders[1].value), text_font, (240, 204, 114), 350, 230)
+        self.draw_text(str(self.sliders[2].value), text_font, (240, 204, 114), 350, 330)
         pygame.display.update()
 
 
@@ -91,6 +100,7 @@ class Menu:
                 elif self.confButton.collidepoint(event.pos):
                     c = Configuration(self.screen, self.args)
                     self.args = c.args
+                    pygame.display.set_caption('Menu')
                     self.renderMenu()
                 elif self.exitButton.collidepoint(event.pos):
                     exits()
@@ -107,5 +117,5 @@ class Menu:
         clock = pygame.time.Clock()
         while self.running:
             self.menu_handler()
-            clock.tick(60)
+            clock.tick(30)
         pygame.quit()

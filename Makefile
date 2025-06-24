@@ -30,7 +30,7 @@ d:
 
 v:
 	# python3 src/game.py -load 'models/first.pth' -vn -fps 7
-	python3 src/game.py -load 'models/dist.pth' -vsn -fps 7
+	python3 src/game.py -load 'models/dist.pth' -vn -fps 7
 
 m:
 	python3 src/game.py -v
@@ -48,7 +48,7 @@ fclean: clean
 
 gpush: fclean
 	git add .
-	git commit -m "Configuration Panel"
+	git commit -m "Display"
 	git push
 
 re: fclean all
