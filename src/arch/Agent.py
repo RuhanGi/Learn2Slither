@@ -52,14 +52,6 @@ class Agent:
         self.optimizer = optim.Adam(self.qnet.parameters(), lr=self.lr)
         self.criterion = nn.MSELoss()
 
-    # def act(self, state, args) -> int:
-    #     self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)
-    #     if not args.nolearn and torch.rand(1).item() < self.epsilon:
-    #         return torch.randint(0, 4, (1,)).item()
-    #     with torch.no_grad():
-    #         qs = self.qnet(torch.tensor(state, dtype=torch.float32))
-    #         return torch.argmax(qs).item()
-
     def act(self, state, args) -> int:
         self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)
         with torch.no_grad():
@@ -98,4 +90,3 @@ class Agent:
         if path is not None:
             torch.save(self.qnet.state_dict(), path)
             print(GREEN + "Model Saved!", RESET)
-    

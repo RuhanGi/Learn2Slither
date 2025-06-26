@@ -1,4 +1,4 @@
-from arch import Agent, Menu, Game
+from arch import Agent, Menu, Game, plotStats
 import argparse
 import sys
 
@@ -52,6 +52,9 @@ def main():
 
     g = Game(args)
     g.run(agent, args)
+
+    # if args.visual:
+    plotStats(g.lengths)
 
     agent.save(args.save)
 

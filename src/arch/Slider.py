@@ -21,7 +21,7 @@ class Slider:
             inital = max
 
         self.value = initial
-        x = initial / (max - min) * size[0]
+        x = (initial-min) / (max - min) * size[0]
 
         self.container_rect = pygame.Rect(self.topleft[0], self.topleft[1], self.size[0], self.size[1])
         self.button_rect = pygame.Rect(self.topleft[0] + x - widthB/2, self.topleft[1] - 5, widthB, self.size[1] + 10)

@@ -48,7 +48,7 @@ fclean: clean
 
 gpush: fclean
 	git add .
-	git commit -m "Display"
+	git commit -m "Resuls and Stats"
 	git push
 
 re: fclean all
