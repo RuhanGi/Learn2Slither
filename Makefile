@@ -9,7 +9,7 @@ RESET  = \033[0m\n
 
 all: check
 	printf "$(GREEN) Packages Ready! $(RESET)"
-	printf "$(GREY)  Usage:$(YELLOW) make {gen, t, p} $(RESET)"
+	printf "$(GREY)  Usage:$(YELLOW) make {t, v, s} $(RESET)"
 
 check:
 	for pkg in $(PKGS); do \
@@ -17,9 +17,6 @@ check:
 			pip3 install $$pkg > /dev/null 2>&1; \
 		fi; \
 	done
-
-a:
-	python3 src/game.py -load 'models/first.pth' -size 10 20 -n
 
 t:
 	python3 src/game.py -load 'models/dist.pth' -sessions 200 -fps 2000
@@ -29,11 +26,7 @@ d:
 	python3 src/game.py -load 'models/dist.pth' -save 'models/dist.pth' -sessions 200 -fps 2000
 
 v:
-	# python3 src/game.py -load 'models/first.pth' -vn -fps 7
 	python3 src/game.py -load 'models/dist.pth' -vn -fps 7
-
-m:
-	python3 src/game.py -v
 
 s:
 	python3 src/game.py -load 'models/dist.pth' -vns -fps 7
@@ -48,7 +41,7 @@ fclean: clean
 
 gpush: fclean
 	git add .
-	git commit -m "flake8"
+	git commit -m "Results"
 	git push
 
 re: fclean all
