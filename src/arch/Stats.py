@@ -1,36 +1,47 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 def plotStats(lengths):
-    if not lengths:
+    if not lengths or len(lengths) == 0:
         print("No data to plot.")
         return
 
     lengths = np.array(lengths)
-    avg_len = lengths.mean()
-    max_len = lengths.max()
-    pct_above_10 = (lengths >= 10).sum() / len(lengths) * 100
+    window_size = 10
+    num_windows = len(lengths) // window_size
+    averages = [
+        lengths[i*window_size:(i+1)*window_size].mean()
+        for i in range(num_windows)
+    ]
 
     plt.figure(figsize=(10, 6))
-    plt.plot(lengths, linestyle='None', label='Length per Episode', color='blue', marker='o')
-    plt.axhline(avg_len, color='orange', linestyle='--', label=f'Average = {avg_len:.2f}')
-    plt.axhline(max_len, color='green', linestyle='-.', label=f'Max = {max_len}')
-    
-    # Add percentage text
-    plt.text(len(lengths)*0.7, max_len*0.9,
-             f'≥10 Length Episodes: {pct_above_10:.1f}%',
-             fontsize=12, bbox=dict(facecolor='white', edgecolor='gray', boxstyle='round'))
+    plt.plot(averages, marker='o', label='Average per 10 samples')
+    max_length = lengths.max()
+    plt.axhline(y=max_length, color='r', linestyle='--', label='Max length')
+    plt.axhline(y=10, color='g', linestyle='--', label='Length=10')
+    overall_avg = lengths.mean()
+    percent = np.sum(lengths >= 10) / len(lengths) * 100
+    stats_text = (
+        f"Average length: {overall_avg:.2f}\n"
+        f"Max length: {max_length}\n"
+        f"Lengths ≥ 10: {percent:.2f}%"
+    )
 
-    plt.title("Snake Length per Episode")
-    plt.xlabel("Episode")
-    plt.ylabel("Snake Length")
+    plt.gca().text(
+        0.95, 0.95, stats_text,
+        verticalalignment='top',
+        horizontalalignment='right',
+        transform=plt.gca().transAxes,
+        bbox=dict(boxstyle='round,pad=0.5', facecolor='white', alpha=0.8)
+    )
+
     plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-    plt.gcf().canvas.mpl_connect('key_press_event', lambda event: plt.close() if event.key == 'escape' else None)
+    plt.xlabel('Window index')
+    plt.ylabel('Average length')
+    plt.title(f'Average Lengths per {window_size} samples')
+    plt.gcf().canvas.mpl_connect(
+        'key_press_event',
+        lambda event: plt.close() if event.key == 'escape' else None
+    )
     plt.show()
-
-# print("\rGame Over!" + " " * 30)
-# print(f"Max Length = {np.max(self.lengths)}, max duration = {np.max(self.durations)}")
-# print(f"Avg Length = {np.average(self.lengths):.2f}, avg duration = {np.average(self.durations):.2f}")
-# ? Statistics: max, avg, wall vs self, win rate >= 10

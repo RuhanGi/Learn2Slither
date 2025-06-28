@@ -1,12 +1,14 @@
 import pygame
 
+
 SELECTED = {
-    True:"white",
-    False:"brown"
+    True: "white",
+    False: "brown"
 }
 
+
 class Slider:
-    def __init__(self, topleft: tuple, size: tuple, initial: int, min: int, max: int, widthB=20) -> None:
+    def __init__(self, topleft, size, initial, min, max, widthB=20) -> None:
         self.topleft = topleft
         self.size = size
         self.hovered = False
@@ -16,26 +18,33 @@ class Slider:
         self.max = max
 
         if initial < min:
-            inital = min
+            initial = min
         elif initial > max:
-            inital = max
+            initial = max
 
         self.value = initial
         x = (initial-min) / (max - min) * size[0]
 
-        self.container_rect = pygame.Rect(self.topleft[0], self.topleft[1], self.size[0], self.size[1])
-        self.button_rect = pygame.Rect(self.topleft[0] + x - widthB/2, self.topleft[1] - 5, widthB, self.size[1] + 10)
-        
+        self.container_rect = pygame.Rect(
+            self.topleft[0], self.topleft[1], self.size[0], self.size[1]
+        )
+        self.button_rect = pygame.Rect(
+            self.topleft[0] + x - widthB/2, self.topleft[1] - 5,
+            widthB, self.size[1] + 10
+        )
+
     def move_slider(self):
         pos = pygame.mouse.get_pos()[0]
         if pos < self.topleft[0]:
             pos = self.topleft[0]
         if pos > self.topleft[0] + self.size[0]:
             pos = self.topleft[0] + self.size[0]
-        
-        button_val = pos - self.topleft[0]
-        self.value = round((button_val/self.size[0]) * (self.max-self.min) + self.min)
-        self.button_rect.centerx = self.topleft[0] + (self.value-self.min) / (self.max-self.min) * self.size[0]
+
+        perc = (pos - self.topleft[0]) / self.size[0]
+        self.value = round(perc * (self.max-self.min) + self.min)
+
+        z = (self.value-self.min) / (self.max-self.min)
+        self.button_rect.centerx = self.topleft[0] + z * self.size[0]
 
     def render(self, screen):
         if self.hovered:
