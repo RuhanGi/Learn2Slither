@@ -1,21 +1,8 @@
 import numpy as np
 import pygame
 import signal
-import sys
 from .Interpreter import Interpreter
 from .Slider import Slider
-
-
-RED     = "\033[31m"
-GREEN   = "\033[32m"
-YELLOW  = "\033[33m"
-BLUE    = "\033[34m"
-PURPLE  = "\033[35m"
-CYAN    = "\033[36m"
-GRAY    = "\033[90m"
-BLACK   = "\033[30m"
-WHITE   = "\033[37m"
-RESET   = "\033[0m"
 
 
 class Game:
@@ -23,12 +10,6 @@ class Game:
         Game Mechanics
     """
     # TODO REMEMBER FLAKE8
-    # TODO after training display results, statistics, ...
-
-    # ? Statistics: max, avg, wall vs self, win rate >= 10
-    # * Results: 
-    # * 1. Avg Length over training
-
 
     def __init__(self, args):
         self.rows = args.size[0] + 2
@@ -42,8 +23,13 @@ class Game:
 
         if args.visual:
             pygame.init()
-            self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT + 100))
-            self.slider = Slider((self.WIDTH/8, self.HEIGHT + 20), (self.WIDTH * 3/4, 60), args.fps, 1, 60)
+            size = (self.WIDTH, self.HEIGHT + 100)
+            self.screen = pygame.display.set_mode(size)
+            self.slider = Slider(
+                (self.WIDTH/8, self.HEIGHT + 20),
+                (self.WIDTH * 3/4, 60),
+                args.fps, 1, 60
+            )
             pygame.display.set_caption('Learn2Slither')
 
         self.running = True
@@ -63,12 +49,12 @@ class Game:
 
     def get_empty_cell(self, coord):
         i, j = coord
-        neighbors = [(i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)]
-        valid_neighbors = [(r, c) for r, c in neighbors if self.board[r, c] == '0']
+        near = [(i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)]
+        valid = [(r, c) for r, c in near if self.board[r, c] == '0']
 
-        if not valid_neighbors:
-            return None # ! HANDLE THIS
-        return valid_neighbors[np.random.choice(len(valid_neighbors))]
+        if not valid:
+            return None
+        return valid[np.random.choice(len(valid))]
 
     def createBoard(self):
         self.board = np.full((self.rows, self.cols), '0', dtype='<U1')
@@ -80,7 +66,8 @@ class Game:
             self.snake.append(self.get_empty_cell(self.snake[-1]))
         self.board[self.snake[-1]] = 'H'
         mapps = {(-1, 0): 0, (0, 1): 1, (1, 0): 2, (0, -1): 3}
-        self.direction = mapps[tuple(np.array(self.snake[-1])-np.array(self.snake[-2]))]
+        change = tuple(np.array(self.snake[-1])-np.array(self.snake[-2]))
+        self.direction = mapps[change]
         self.alive = True
         self.moves = 0
 
@@ -130,24 +117,35 @@ class Game:
                 if self.board[i][j] not in '0SH':
                     self.draw(imgmap[self.board[i][j]], j, i)
                 elif self.board[i][j] == 'H':
-                    self.draw(imgmap[self.board[i][j]], j, i, rotate=-90 * self.direction)
-
+                    self.draw(
+                        imgmap[self.board[i][j]], j, i,
+                        rotate=-90 * self.direction
+                    )
 
         if len(self.snake) > 1:
             mapps = {(-1, 0): 0, (0, 1): 1, (1, 0): 2, (0, -1): 3}
             temp = np.array(self.snake[0])
             direc1 = mapps[tuple(temp - np.array(self.snake[1]))]
-            self.draw('./assets/Tail.png', temp[1], temp[0], rotate=-90 * direc1)
+            self.draw('./assets/Tail.png', temp[1], temp[0], rotate=direc1*-90)
             for i in range(1, len(self.snake) - 1):
                 temp = np.array(self.snake[i])
                 direc1 = mapps[tuple(temp - np.array(self.snake[i-1]))]
                 direc2 = mapps[tuple(temp - np.array(self.snake[i+1]))]
                 if abs(direc1 - direc2) == 2:
-                    self.draw('./assets/Snake.png', temp[1], temp[0], rotate=-90 * direc1)
+                    self.draw(
+                        './assets/Snake.png', temp[1], temp[0],
+                        rotate=-90 * direc1
+                    )
                 elif (direc1 - direc2) % 4 == 1:
-                    self.draw('./assets/CornerSnake.png', temp[1], temp[0], rotate=-90 * (direc2+2))
+                    self.draw(
+                        './assets/CornerSnake.png', temp[1], temp[0],
+                        rotate=-90 * (direc2+2)
+                    )
                 else:
-                    self.draw('./assets/CornerSnake.png', temp[1], temp[0], rotate=-90 * (direc1+2))
+                    self.draw(
+                        './assets/CornerSnake.png', temp[1], temp[0],
+                        rotate=-90 * (direc1+2)
+                    )
 
         self.slider.render(self.screen)
 
@@ -179,7 +177,11 @@ class Game:
         if done:
             self.lengths.append(len(self.snake))
             self.durations.append(self.moves)
-            print(f"\rSnake Died! Length = {len(self.snake)}, Duration = {self.moves}     \t", end="")
+            print(
+                f"\rLength = {len(self.snake)}, " +
+                f"Duration = {self.moves}    \t",
+                end=""
+            )
             self.sesscount += 1
             self.createBoard()
 
@@ -233,27 +235,18 @@ class Game:
                 args.fps = self.slider.get_value()
                 pygame.display.update()
             clock.tick(args.fps)
-    
         pygame.quit()
-    
-        if len(self.lengths) > 0:
-            print(f"\rGame Over!" + " " * 30)
-            print(f"Max Length = {np.max(self.lengths)}, max duration = {np.max(self.durations)}")
-            print(f"Avg Length = {np.average(self.lengths):.2f}, avg duration = {np.average(self.durations):.2f}")
-        else:
-            print(f"\rGame Ended! Length = {len(self.snake)}, max duration = {self.moves}")
 
-    def printBoard(self):
-        if (len(self.snake) > 0):
-            self.updateSnake()
-        col = {'W': GRAY, 'S': PURPLE, 'H': YELLOW, 'G': GREEN, 'R': RED}
-        for row in self.board:
-            for cell in row:
-                if cell != '0':
-                    print(col[cell] + cell, end='')
-                else:
-                    print(' ', end='')
-            print(RESET)
+        if len(self.lengths) == 0:
+            print(
+                f"\rLength = {len(self.snake)},",
+                f"Duration = {self.moves}"
+            )
+        else:
+            print(
+                f"\rMax Length = {np.max(self.lengths)},",
+                f"max duration = {np.max(self.durations)}"
+            )
 
     def printVision(self, vision):
         padd = len(vision[-1])

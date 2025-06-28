@@ -48,7 +48,7 @@ fclean: clean
 
 gpush: fclean
 	git add .
-	git commit -m "Resuls and Stats"
+	git commit -m "flake8"
 	git push
 
 re: fclean all

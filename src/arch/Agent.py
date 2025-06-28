@@ -1,18 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torch.nn.functional as F
 
-RED     = "\033[31m"
-GREEN   = "\033[32m"
-YELLOW  = "\033[33m"
-BLUE    = "\033[34m"
-PURPLE  = "\033[35m"
-CYAN    = "\033[36m"
-GRAY    = "\033[90m"
-BLACK   = "\033[30m"
-WHITE   = "\033[37m"
-RESET   = "\033[0m"
 
 class QNet(nn.Module):
     def __init__(self, in_dim: int, out_dim: int = 4):
@@ -89,4 +78,4 @@ class Agent:
     def save(self, path):
         if path is not None:
             torch.save(self.qnet.state_dict(), path)
-            print(GREEN + "Model Saved!", RESET)
+            print("\033[32m" + "Model Saved!", "\033[0m")

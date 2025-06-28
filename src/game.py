@@ -54,7 +54,7 @@ def main():
     g.run(agent, args)
 
     # if args.visual:
-    plotStats(g.lengths)
+    # plotStats(g.lengths)
 
     agent.save(args.save)
 

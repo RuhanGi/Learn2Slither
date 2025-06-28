@@ -29,3 +29,8 @@ def plotStats(lengths):
     plt.tight_layout()
     plt.gcf().canvas.mpl_connect('key_press_event', lambda event: plt.close() if event.key == 'escape' else None)
     plt.show()
+
+# print("\rGame Over!" + " " * 30)
+# print(f"Max Length = {np.max(self.lengths)}, max duration = {np.max(self.durations)}")
+# print(f"Avg Length = {np.average(self.lengths):.2f}, avg duration = {np.average(self.durations):.2f}")
+# ? Statistics: max, avg, wall vs self, win rate >= 10
