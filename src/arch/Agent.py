@@ -6,21 +6,21 @@ import torch.optim as optim
 class MyNet(nn.Module):
     def __init__(self, in_dim: int, out_dim: int = 4):
         super().__init__()
-        self.layer1 = nn.Linear(in_features=in_dim, out_features=100)
-        self.layer2 = nn.Linear(in_features=100, out_features=16)
-        self.layer3 = nn.Linear(in_features=16, out_features=out_dim)
+        self.l1 = nn.Linear(in_features=in_dim, out_features=100)
+        self.l2 = nn.Linear(in_features=100, out_features=16)
+        self.l3 = nn.Linear(in_features=16, out_features=out_dim)
         self._initialize_weights()
 
     def _initialize_weights(self):
-        for layer in [self.layer1, self.layer2, self.layer3]:
+        for layer in [self.l1, self.l2, self.l3]:
             if isinstance(layer, nn.Linear):
                 nn.init.xavier_uniform_(layer.weight)
                 nn.init.zeros_(layer.bias)
 
     def forward(self, x) -> torch.Tensor:
-        x = torch.relu(self.layer1(x))
-        x = torch.relu(self.layer2(x))
-        x = self.layer3(x)
+        x = torch.relu(self.l1(x))
+        x = torch.relu(self.l2(x))
+        x = self.l3(x)
         return x
 
 

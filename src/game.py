@@ -79,9 +79,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
-    # try: #TODO
-    #     main()
-    # except Exception as e:
-    #     print(RED + "Error: " + str(e) + RESET)
-    #     sys.exit(1)
+    try:
+        main()
+    except Exception as e:
+        print("\033[91m" + "Error: " + str(e) + "\033[0m")
+        sys.exit(1)

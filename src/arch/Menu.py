@@ -9,7 +9,6 @@ def exits():
 
 
 # ? SESSIONS, ROWS, COLS, STEPBYSTEP, NOLEARN
-
 class Configuration:
     def __init__(self, screen, args):
         self.screen = screen

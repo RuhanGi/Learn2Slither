@@ -9,7 +9,6 @@ class Game:
     """
         Game Mechanics
     """
-    # TODO REMEMBER FLAKE8
 
     def __init__(self, args):
         self.rows = args.size[0] + 2
@@ -84,9 +83,10 @@ class Game:
         vision.append(self.board[r, c-1::-1])
         return vision
 
-    def getState(self):
+    def getState(self, args):
         vision = self.getVision()
-        # self.printVision(vision)
+        if args.stepbystep:
+            self.printVision(vision)
         return Interpreter.getState(vision)
 
     def draw(self, path, x, y, rotate=0):
@@ -216,13 +216,13 @@ class Game:
         if args.stepbystep:
             self.greenlight = False
 
-        state = self.getState()
+        state = self.getState(args)
         while self.running and self.sesscount < args.sessions:
 
             if not args.stepbystep or self.greenlight:
                 action = agent.act(state, args)
                 reward, done = self.move(action)
-                next_state = self.getState()
+                next_state = self.getState(args)
                 if not args.nolearn:
                     agent.train_step(state, action, reward, next_state, done)
                 state = next_state
@@ -234,7 +234,7 @@ class Game:
                 self.renderBoard()
                 args.fps = self.slider.get_value()
                 pygame.display.update()
-            clock.tick(args.fps)
+                clock.tick(args.fps)
         pygame.quit()
 
         if len(self.lengths) == 0:

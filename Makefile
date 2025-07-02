@@ -22,8 +22,8 @@ t:
 	python3 src/game.py -load 'models/dist.pth' -sessions 200 -fps 2000
 
 d:
-	# python3 src/game.py -save 'models/dist.pth' -sessions 20 -fps 200
-	python3 src/game.py -load 'models/dist.pth' -save 'models/dist.pth' -sessions 200 -fps 2000
+	python3 src/game.py -save 'models/1000sess.pth' -sessions 1000
+	# python3 src/game.py -load 'models/dist.pth' -save 'models/dist.pth' -sessions 200 -fps 2000
 
 v:
 	python3 src/game.py -load 'models/dist.pth' -vn -fps 7
