@@ -206,6 +206,7 @@ class Game:
 
     def run(self, agent, args):
         clock = pygame.time.Clock()
+        direc = {0: "UP", 1: "RIGHT", 2: "DOWN", 3: "LEFT"}
         self.args = args
         self.sesscount = 0
 
@@ -221,6 +222,8 @@ class Game:
 
             if not args.stepbystep or self.greenlight:
                 action = agent.act(state, args)
+                if args.stepbystep:
+                    print("\n" + direc[action])
                 reward, done = self.move(action)
                 next_state = self.getState(args)
                 if not args.nolearn:
@@ -249,14 +252,18 @@ class Game:
             )
 
     def printVision(self, vision):
+        color = {
+            'W': "\033[0m", '0': "\033[97m", 'S': "\033[93m",
+            'G': "\033[92m", 'R': "\033[91m"
+        }
         padd = len(vision[-1])
         for c in reversed(vision[0]):
-            print(padd * ' ' + c)
+            print(padd * ' ' + color[c] + c)
         for c in reversed(vision[-1]):
-            print(c, end='')
-        print('S', end='')
+            print(color[c] + c, end='')
+        print("\033[96m" + 'H', end='')
         for c in vision[1]:
-            print(c, end='')
+            print(color[c] + c, end='')
         print()
         for c in vision[2]:
-            print(padd * ' ' + c)
+            print(padd * ' ' + color[c] + c)

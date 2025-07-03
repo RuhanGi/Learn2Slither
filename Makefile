@@ -41,7 +41,7 @@ fclean: clean
 
 gpush: fclean
 	git add .
-	git commit -m "models"
+	git commit -m "Tasks Remaining"
 	git push
 
 re: fclean all

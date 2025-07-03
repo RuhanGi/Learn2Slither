@@ -2,6 +2,15 @@ from arch import Agent, Menu, Game, plotStats
 import argparse
 import sys
 
+# TODO flake8
+# TODO add manual movement
+# TODO improve stats display (embed into screen)
+# TODO try to make all uniform one screen, new PyGame class to handle screen
+# TODO  starting and ending interfaces showing the score in screen itself
+# ? check readjusting width
+# TODO potentially check with more states to see if it would improve "few rounds" score
+# TODO check how to handle loops with nontraining
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Learn2Slither.")
