@@ -16,6 +16,7 @@ class Game:
         self.scale = (min(800/self.rows, 800/self.cols)).__ceil__()
         self.WIDTH = self.scale * self.cols
         self.HEIGHT = self.scale * self.rows
+        self.args = args
 
         self.lengths = []
         self.durations = []
@@ -25,8 +26,8 @@ class Game:
             size = (self.WIDTH, self.HEIGHT + 100)
             self.screen = pygame.display.set_mode(size)
             self.slider = Slider(
-                (self.WIDTH/8, self.HEIGHT + 20),
-                (self.WIDTH * 3/4, 60),
+                (self.WIDTH/4+25, self.HEIGHT + 20),
+                (self.WIDTH * 5.5 / 8, 60),
                 args.fps, 1, 60
             )
             pygame.display.set_caption('Learn2Slither')
@@ -83,9 +84,9 @@ class Game:
         vision.append(self.board[r, c-1::-1])
         return vision
 
-    def getState(self, args):
+    def getState(self):
         vision = self.getVision()
-        if args.stepbystep:
+        if self.args.stepbystep:
             self.printVision(vision)
         return Interpreter.getState(vision)
 
@@ -97,6 +98,35 @@ class Game:
         surf_rect = surf.get_rect()
         surf_rect.topleft = (self.scale * x, self.scale * y)
         self.screen.blit(surf, surf_rect)
+
+    def renderSnake(self):
+        mapps = {(-1, 0): 0, (0, 1): 1, (1, 0): 2, (0, -1): 3}
+        temp = np.array(self.snake[0])
+        direc1 = mapps[tuple(temp - np.array(self.snake[1]))]
+        self.draw('./assets/Tail.png', temp[1], temp[0], rotate=direc1*-90)
+        for i in range(1, len(self.snake) - 1):
+            temp = np.array(self.snake[i])
+            direc1 = mapps[tuple(temp - np.array(self.snake[i-1]))]
+            direc2 = mapps[tuple(temp - np.array(self.snake[i+1]))]
+            if abs(direc1 - direc2) == 2:
+                self.draw(
+                    './assets/Snake.png', temp[1], temp[0],
+                    rotate=-90 * direc1
+                )
+            elif (direc1 - direc2) % 4 == 1:
+                self.draw(
+                    './assets/CornerSnake.png', temp[1], temp[0],
+                    rotate=-90 * (direc2+2)
+                )
+            else:
+                self.draw(
+                    './assets/CornerSnake.png', temp[1], temp[0],
+                    rotate=-90 * (direc1+2)
+                )
+
+    def text(self, text, font, text_col, x, y):
+        img = font.render(text, True, text_col)
+        self.screen.blit(img, (x, y))
 
     def renderBoard(self):
         imgmap = {
@@ -123,31 +153,11 @@ class Game:
                     )
 
         if len(self.snake) > 1:
-            mapps = {(-1, 0): 0, (0, 1): 1, (1, 0): 2, (0, -1): 3}
-            temp = np.array(self.snake[0])
-            direc1 = mapps[tuple(temp - np.array(self.snake[1]))]
-            self.draw('./assets/Tail.png', temp[1], temp[0], rotate=direc1*-90)
-            for i in range(1, len(self.snake) - 1):
-                temp = np.array(self.snake[i])
-                direc1 = mapps[tuple(temp - np.array(self.snake[i-1]))]
-                direc2 = mapps[tuple(temp - np.array(self.snake[i+1]))]
-                if abs(direc1 - direc2) == 2:
-                    self.draw(
-                        './assets/Snake.png', temp[1], temp[0],
-                        rotate=-90 * direc1
-                    )
-                elif (direc1 - direc2) % 4 == 1:
-                    self.draw(
-                        './assets/CornerSnake.png', temp[1], temp[0],
-                        rotate=-90 * (direc2+2)
-                    )
-                else:
-                    self.draw(
-                        './assets/CornerSnake.png', temp[1], temp[0],
-                        rotate=-90 * (direc1+2)
-                    )
-
+            self.renderSnake()
         self.slider.render(self.screen)
+        font = pygame.font.SysFont("Arial", 35)
+        self.text("  Length: " + str(len(self.snake)), font, "darkgreen", 10, self.HEIGHT+10)
+        self.text("Duration: " + str(self.moves), font, "darkgreen", 10, self.HEIGHT+55)
 
     def move(self, direction):
         self.direction = direction
@@ -175,6 +185,7 @@ class Game:
 
         done = not self.alive
         if done:
+            self.direc = -1
             self.lengths.append(len(self.snake))
             self.durations.append(self.moves)
             print(
@@ -204,52 +215,146 @@ class Game:
             elif event.type == pygame.MOUSEBUTTONUP:
                 self.slider.hovered = False
 
-    def run(self, agent, args):
+    def manual_handler(self):
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.running = False
+                elif event.key == pygame.K_w:
+                    self.direc = 0
+                elif event.key == pygame.K_d:
+                    self.direc = 1
+                elif event.key == pygame.K_s:
+                    self.direc = 2
+                elif event.key == pygame.K_a:
+                    self.direc = 3
+            elif event.type == pygame.QUIT:
+                self.running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if self.slider.container_rect.collidepoint(event.pos):
+                    self.slider.hovered = True
+            elif event.type == pygame.MOUSEBUTTONUP:
+                self.slider.hovered = False
+
+    def runManual(self):
+        def handle_sigint(signal_number, frame):
+            self.running = False
+        signal.signal(signal.SIGINT, handle_sigint)
+
+        self.sesscount = 0
+        self.direc = -1
+        clock = pygame.time.Clock()
+        while self.running and self.sesscount < self.args.sessions:
+            if self.direc != -1:
+                self.move(self.direc)
+            self.manual_handler()
+            self.renderBoard()
+            self.args.fps = self.slider.get_value()
+            pygame.display.update()
+            clock.tick(self.args.fps)
+
+        pygame.quit()
+        if len(self.lengths) == 0:
+            self.lengths.append(len(self.snake))
+            self.durations.append(self.moves)
+        print(
+            f"\rMax Length = {np.max(self.lengths)},",
+            f"max duration = {np.max(self.durations)}"
+        )
+        
+
+    def run(self, agent):
         clock = pygame.time.Clock()
         direc = {0: "UP", 1: "RIGHT", 2: "DOWN", 3: "LEFT"}
-        self.args = args
         self.sesscount = 0
 
         def handle_sigint(signal_number, frame):
             self.running = False
         signal.signal(signal.SIGINT, handle_sigint)
 
-        if args.stepbystep:
+        if self.args.stepbystep:
             self.greenlight = False
 
-        state = self.getState(args)
-        while self.running and self.sesscount < args.sessions:
+        state = self.getState()
+        while self.running and self.sesscount < self.args.sessions:
 
-            if not args.stepbystep or self.greenlight:
-                action = agent.act(state, args)
-                if args.stepbystep:
+            if not self.args.stepbystep or self.greenlight:
+                action = agent.act(state, self.args)
+                if self.args.stepbystep:
                     print("\n" + direc[action])
                 reward, done = self.move(action)
-                next_state = self.getState(args)
-                if not args.nolearn:
+                next_state = self.getState()
+                if not self.args.nolearn:
                     agent.train_step(state, action, reward, next_state, done)
                 state = next_state
-                if args.stepbystep:
+                if self.args.stepbystep:
                     self.greenlight = False
 
-            if args.visual:
+            if self.args.visual:
                 self.event_handler()
                 self.renderBoard()
-                args.fps = self.slider.get_value()
+                self.args.fps = self.slider.get_value()
                 pygame.display.update()
-                clock.tick(args.fps)
-        pygame.quit()
+                clock.tick(self.args.fps)
 
         if len(self.lengths) == 0:
-            print(
-                f"\rLength = {len(self.snake)},",
-                f"Duration = {self.moves}"
-            )
-        else:
-            print(
-                f"\rMax Length = {np.max(self.lengths)},",
-                f"max duration = {np.max(self.durations)}"
-            )
+            self.lengths.append(len(self.snake))
+            self.durations.append(self.moves)
+        if self.args.visual:
+            self.putStats()
+        pygame.quit()
+
+        print(
+            f"\rMax Length = {np.max(self.lengths)},",
+            f"max duration = {np.max(self.durations)}"
+        )
+
+    def stats_handler(self):
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.running = False
+            elif event.type == pygame.QUIT:
+                self.running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if self.exitButton.collidepoint(event.pos):
+                    self.running = False
+
+    def putText(self):
+        font = pygame.font.SysFont("Arial", 55)
+        font2 = pygame.font.SysFont("Arial", 45)
+        self.text("Max Length", font, (240, 204, 114), 120, 100)
+        self.text(str(np.max(self.lengths)), font2, (240, 204, 114), 250, 200)
+        self.text("Max Duration", font, (240, 204, 114), self.WIDTH/2, 100)
+        self.text(str(np.max(self.durations)), font2, (240, 204, 114), self.WIDTH/2+100, 200)
+        self.text("Avg Length", font, (240, 204, 114), 120, 300)
+        self.text(str(np.average(self.lengths)), font2, (240, 204, 114), 250, 400)
+        self.text("Avg Duration", font, (240, 204, 114), self.WIDTH/2, 300)
+        self.text(str(np.average(self.durations)), font2, (240, 204, 114), self.WIDTH/2+100, 400)
+        self.text("Length ≥ 10", font, (240, 204, 114), self.WIDTH/2-150, 500)
+        self.text(str(np.sum(np.array(self.lengths) >= 10) / len(self.lengths) * 100)+"%", font2, (240, 204, 114), self.WIDTH/2-50, 600)
+
+        # TODO CLEANUP
+
+    def putStats(self):
+        image = pygame.image.load("assets/Stats.png").convert()
+        image = pygame.transform.scale(image, (self.WIDTH, self.HEIGHT+100))
+        self.screen.blit(image, (0, 0))
+        self.putText()
+
+        pygame.display.update()
+
+        self.exitButton = pygame.Rect((280, 700), (240, 800))
+        
+        clock = pygame.time.Clock()
+        while self.running:
+            self.stats_handler()
+            clock.tick(60)
+        # * MAX AND AVERAGE LENGTH, DURATIONS
+        # * percentage ≥ 10
+        # * EXIT button
 
     def printVision(self, vision):
         color = {

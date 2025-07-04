@@ -25,8 +25,12 @@ d:
 	python3 src/game.py -save 'models/100sess.pth' -sessions 100
 	# python3 src/game.py -load 'models/dist.pth' -save 'models/dist.pth' -sessions 200 -fps 2000
 
+m:
+	python3 src/game.py -load 'models/dist.pth' -mn -fps 7
+
 v:
-	python3 src/game.py -load 'models/dist.pth' -vn -fps 7
+	# python3 src/game.py -load 'models/dist.pth' -vn -fps 7 -sessions 2
+	python3 src/game.py -load 'models/dist.pth' -v -fps 200 -sessions 2
 
 s:
 	python3 src/game.py -load 'models/dist.pth' -vns -fps 7
@@ -41,7 +45,7 @@ fclean: clean
 
 gpush: fclean
 	git add .
-	git commit -m "Tasks Remaining"
+	git commit -m "Stats"
 	git push
 
 re: fclean all

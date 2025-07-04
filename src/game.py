@@ -1,13 +1,9 @@
-from arch import Agent, Menu, Game, plotStats
+from arch import Agent, Menu, Game
 import argparse
 import sys
 
 # TODO flake8
-# TODO add manual movement
-# TODO improve stats display (embed into screen)
-# TODO try to make all uniform one screen, new PyGame class to handle screen
-# TODO  starting and ending interfaces showing the score in screen itself
-# ? check readjusting width
+
 # TODO potentially check with more states to see if it would improve "few rounds" score
 # TODO check how to handle loops with nontraining
 
@@ -49,12 +45,18 @@ def parse_args():
         '-s', '--stepbystep', action='store_true',
         help='Enable step-by-step mode.'
     )
+    parser.add_argument(
+        '-m', '--manual', action='store_true',
+        help='Enable manual play.'
+    )
 
     return parser
 
 
 def verify_args(args):
     assert args.size[0] > 2 and args.size[1] > 2, "improper board size"
+    if args.manual:
+        args.visual = True
     if args.visual:
         assert args.size[0] <= 100 and args.size[1] <= 100, "large board size"
     else:
@@ -79,10 +81,13 @@ def main():
     agent.load(args.load)
 
     g = Game(args)
-    g.run(agent, args)
+    if args.manual:
+        g.runManual()
+    else:
+        g.run(agent)
 
-    if args.visual:
-        plotStats(g.lengths)
+    # if args.visual:
+    #     plotStats(g.lengths)
 
     agent.save(args.save)
 
