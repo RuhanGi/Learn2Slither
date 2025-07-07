@@ -86,7 +86,7 @@ class Game:
 
     def getState(self):
         vision = self.getVision()
-        if self.args.stepbystep:
+        if self.args.visual:
             self.printVision(vision)
         return Interpreter.getState(vision)
 
@@ -286,7 +286,7 @@ class Game:
 
             if not self.args.stepbystep or self.greenlight:
                 action = agent.act(state, self.args)
-                if self.args.stepbystep:
+                if self.args.visual:
                     print("\n" + direc[action])
                 reward, done = self.move(action)
                 next_state = self.getState()

@@ -19,7 +19,7 @@ check:
 	done
 
 t:
-	python3 src/game.py -load 'models/good.pth' -sessions 100
+	python3 src/game.py -load 'models/good.pth' -sessions 200
 
 d:
 	python3 src/game.py -save 'models/100sess.pth' -sessions 100
@@ -29,8 +29,8 @@ m:
 	python3 src/game.py -load 'models/dist.pth' -mn -fps 7
 
 v:
-	# python3 src/game.py -load 'models/dist.pth' -vn -fps 7 -sessions 2
-	python3 src/game.py -load 'models/dist.pth' -v -fps 200 -sessions 2
+	# python3 src/game.py -load 'models/dist.pth' -vn -fps 7
+	python3 src/game.py -load 'models/dist.pth' -v -fps 7
 
 s:
 	python3 src/game.py -load 'models/dist.pth' -vns -fps 7

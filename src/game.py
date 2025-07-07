@@ -62,6 +62,7 @@ def verify_args(args):
         assert args.size[0] <= 100 and args.size[1] <= 100, "large board size"
     else:
         assert not args.stepbystep, "step-by-step reserved for GUI"
+    return args
 
 
 def main():
@@ -71,7 +72,7 @@ def main():
         sys.exit(0)
 
     args = parser.parse_args()
-    verify_args(args)
+    args = verify_args(args)
 
     if args.visual:
         m = Menu(args)
