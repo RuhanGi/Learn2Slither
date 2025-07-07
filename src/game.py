@@ -4,7 +4,8 @@ import sys
 
 # TODO flake8
 
-# TODO potentially check with more states to see if it would improve "few rounds" score
+# TODO potentially check with more states
+# TODO to see if it would improve "few rounds" score
 # TODO check how to handle loops with nontraining
 
 

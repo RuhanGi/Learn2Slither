@@ -156,8 +156,14 @@ class Game:
             self.renderSnake()
         self.slider.render(self.screen)
         font = pygame.font.SysFont("Arial", 35)
-        self.text("  Length: " + str(len(self.snake)), font, "darkgreen", 10, self.HEIGHT+10)
-        self.text("Duration: " + str(self.moves), font, "darkgreen", 10, self.HEIGHT+55)
+        self.text(
+            "  Length: " + str(len(self.snake)),
+            font, "darkgreen", 10, self.HEIGHT+10
+        )
+        self.text(
+            "Duration: " + str(self.moves),
+            font, "darkgreen", 10, self.HEIGHT+55
+        )
 
     def move(self, direction):
         self.direction = direction
@@ -262,7 +268,6 @@ class Game:
             f"\rMax Length = {np.max(self.lengths)},",
             f"max duration = {np.max(self.durations)}"
         )
-        
 
     def run(self, agent):
         clock = pygame.time.Clock()
@@ -323,38 +328,41 @@ class Game:
                     self.running = False
 
     def putText(self):
-        font = pygame.font.SysFont("Arial", 55)
+        font = pygame.font.SysFont("Arial", 50)
         font2 = pygame.font.SysFont("Arial", 45)
-        self.text("Max Length", font, (240, 204, 114), 120, 100)
-        self.text(str(np.max(self.lengths)), font2, (240, 204, 114), 250, 200)
-        self.text("Max Duration", font, (240, 204, 114), self.WIDTH/2, 100)
-        self.text(str(np.max(self.durations)), font2, (240, 204, 114), self.WIDTH/2+100, 200)
+        self.text("Max Length", font, (240, 204, 114), 120, 125)
+        self.text(str(np.max(self.lengths)), font2, (200, 154, 64), 250, 200)
+        self.text("Max Duration", font, (240, 204, 114), self.WIDTH/2, 125)
+        self.text(
+            str(np.max(self.durations)), font2,
+            (200, 154, 64), self.WIDTH/2+100, 200
+        )
         self.text("Avg Length", font, (240, 204, 114), 120, 300)
-        self.text(str(np.average(self.lengths)), font2, (240, 204, 114), 250, 400)
+        self.text(
+            str(np.average(self.lengths)), font2,
+            (200, 154, 64), 220, 375
+        )
         self.text("Avg Duration", font, (240, 204, 114), self.WIDTH/2, 300)
-        self.text(str(np.average(self.durations)), font2, (240, 204, 114), self.WIDTH/2+100, 400)
+        self.text(
+            str(np.average(self.durations)), font2,
+            (200, 154, 64), self.WIDTH/2+90, 375
+        )
         self.text("Length ≥ 10", font, (240, 204, 114), self.WIDTH/2-150, 500)
-        self.text(str(np.sum(np.array(self.lengths) >= 10) / len(self.lengths) * 100)+"%", font2, (240, 204, 114), self.WIDTH/2-50, 600)
-
-        # TODO CLEANUP
+        goods = np.sum(np.array(self.lengths) >= 10) / len(self.lengths) * 100
+        self.text(str(goods)+"%", font2, (200, 154, 64), self.WIDTH/2-50, 555)
 
     def putStats(self):
         image = pygame.image.load("assets/Stats.png").convert()
         image = pygame.transform.scale(image, (self.WIDTH, self.HEIGHT+100))
         self.screen.blit(image, (0, 0))
         self.putText()
-
         pygame.display.update()
 
         self.exitButton = pygame.Rect((280, 700), (240, 800))
-        
         clock = pygame.time.Clock()
         while self.running:
             self.stats_handler()
             clock.tick(60)
-        # * MAX AND AVERAGE LENGTH, DURATIONS
-        # * percentage ≥ 10
-        # * EXIT button
 
     def printVision(self, vision):
         color = {
